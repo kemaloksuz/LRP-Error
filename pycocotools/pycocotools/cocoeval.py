@@ -472,7 +472,7 @@ class COCOeval:
                             # Compute fp component if there is detection,
                             # else it is -1 by default, and ignored
                             if tp_sum + fp_sum > 0:
-                                lrp_fp[t, s, k, a, 
+                                lrp_fp[t, s, k, a,
                                        m] = fp_sum / (tp_sum + fp_sum)
                             else:
                                 lrp_fp[t, s, k, a, m] = np.nan
@@ -482,7 +482,7 @@ class COCOeval:
 
                             # Compute lrp, it is never undefined
                             tau = _pe.iouThrs[t]
-                            lrp[t, s, k, a, 
+                            lrp[t, s, k, a,
                                 m] = (total_loc/(1-tau) + fp_sum +
                                       fn_sum) / (tp_sum + fp_sum + fn_sum
                                                  )
