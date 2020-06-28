@@ -476,13 +476,13 @@ class COCOeval:
                                 lrp_fp[t, s, k, a, m] = fp_sum/(tp_sum+fp_sum)
                             else:
                                 lrp_fp[t, s, k, a, m] = np.nan
-                            # Compute false negative component, 
+                            # Compute false negative component,
                             # npig is larger than 0
                             lrp_fn[t, s, k, a, m] = fn_sum/npig
 
                             # Compute lrp, it is never undefined
-                            lrp[t, s, k, a, m] = (total_loc / (1-_pe.iouThrs[t])
-                                                  + fp_sum + fn_sum)
+                            lrp[t, s, k, a, m] = (total_loc / (1-_pe.iouThrs[t]) \
+                                                  + fp_sum + fn_sum) \
                                                   / (tp_sum + fp_sum + fn_sum)
         self.eval = {
             'params': p,
@@ -560,24 +560,27 @@ class COCOeval:
                     titleStr = 'Optimal LRP'
                     typeStr = '    '
                 if lrp_type == 'oLRP_Localisation':
-                    s = self.eval['lrp']                    
+                    s = self.eval['lrp']
                     opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
                     cl_num = opt_thr.shape[1]
-                    s = self.eval['lrp_loc'][t, opt_thr, range(cl_num), aind, mind]
+                    s = self.eval['lrp_loc']
+                    s = s[t, opt_thr, range(cl_num), aind, mind]
                     titleStr = 'Optimal LRP Loc'
                     typeStr = '    '
                 if lrp_type == 'oLRP_false_positive':
                     s = self.eval['lrp']
                     opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
-                    cl_num = opt_thr.shape[1]                    
-                    s = self.eval['lrp_fp'][t, opt_thr, range(cl_num), aind, mind]
+                    cl_num = opt_thr.shape[1]
+                    s = self.eval['lrp_fp']
+                    s = s[t, opt_thr, range(cl_num), aind, mind]
                     titleStr = 'Optimal LRP FP'
                     typeStr = '    '
                 if lrp_type == 'oLRP_false_negative':
                     s = self.eval['lrp']
                     opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
-                    cl_num = opt_thr.shape[1]                    
-                    s = self.eval['lrp_fn'][t, opt_thr, range(cl_num), aind, mind]
+                    cl_num = opt_thr.shape[1]
+                    s = self.eval['lrp_fn']
+                    s = s[t, opt_thr, range(cl_num), aind, mind]
                     titleStr = 'Optimal LRP FN'
                     typeStr = '    '
             if len(s[s > -1]) == 0:
