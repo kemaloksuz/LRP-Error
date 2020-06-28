@@ -285,7 +285,7 @@ class COCOeval:
         dtm = np.zeros((T, D))
         gtIg = np.array([g['_ignore'] for g in gt])
         dtIg = np.zeros((T, D))
-        dtIoU = np.zeros((T, D))        
+        dtIoU = np.zeros((T, D))
         if not len(ious) == 0:
             for tind, t in enumerate(p.iouThrs):
                 for dind, d in enumerate(dt):
@@ -312,7 +312,7 @@ class COCOeval:
                     dtIg[tind, dind] = gtIg[m]
                     dtm[tind, dind] = gt[m]['id']
                     gtm[tind, m] = d['id']
-                    dtIoU[tind, dind]=iou                    
+                    dtIoU[tind, dind] = iou
         # set unmatched detections outside of area range to ignore
         a = np.array([d['area'] < aRng[0] or d['area'] > aRng[1]
                       for d in dt]).reshape((1, len(dt)))
@@ -331,7 +331,7 @@ class COCOeval:
             'dtScores': [d['score'] for d in dt],
             'gtIgnore': gtIg,
             'dtIgnore': dtIg,
-            'dtIoUs'  : dtIoU,
+            'dtIoUs' : dtIoU,
         }
 
     def accumulate(self, p=None):
@@ -355,14 +355,14 @@ class COCOeval:
         K = len(p.catIds) if p.useCats else 1
         A = len(p.areaRng)
         M = len(p.maxDets)
-        S = len(p.scoreThrs)        
+        S = len(p.scoreThrs)
         precision = -np.ones(
             (T, R, K, A, M))  # -1 for the precision of absent categories
         recall = -np.ones((T, K, A, M))
         scores = -np.ones((T, R, K, A, M))
-        lrp_localisation = -np.ones((T, S, K, A, M))          
-        lrp_false_positive = -np.ones((T, S, K, A, M))
-        lrp_false_negative = -np.ones((T, S, K, A, M))
+        lrp_loc = -np.ones((T, S, K, A, M))
+        lrp_fp = -np.ones((T, S, K, A, M))
+        lrp_fn = -np.ones((T, S, K, A, M))
         lrp = -np.ones((T, S, K, A, M))
 
         # create dictionary for future indexing
@@ -418,7 +418,7 @@ class COCOeval:
                     fps = np.logical_and(np.logical_not(dtm),
                                          np.logical_not(dtIg))
 
-                    dtIoU = np.multiply(dtIoU,tps)
+                    dtIoU = np.multiply(dtIoU, tps)
                     tp_sum = np.cumsum(tps, axis=1).astype(dtype=np.float)
                     fp_sum = np.cumsum(fps, axis=1).astype(dtype=np.float)
                     for t, (tp, fp) in enumerate(zip(tp_sum, fp_sum)):
@@ -455,33 +455,32 @@ class COCOeval:
                         precision[t, :, k, a, m] = np.array(q)
                         scores[t, :, k, a, m] = np.array(ss)
                         for s, s0 in enumerate(_pe.scoreThrs):
-                            #Threshold the detection set, 
-                            #and count tp fp and fn
-                            inds = np.sum(dtScoresSorted>=s0)
+                            # Threshold the detection set,
+                            # and count tp fp and fn
+                            inds = np.sum(dtScoresSorted >= s0)
                             tp_sum = np.sum(tps[t, :inds])
                             fp_sum = np.sum(fps[t, :inds])
                             fn_sum = npig-tp_sum
 
-                            # Compute localisation component if there is tps, 
+                            # Compute localisation component if there is tps,
                             # else it is -1 by default, and ignored
-                            total_localisation_error = tp_sum-np.sum(dtIoU[t,:inds])
+                            total_loc_error = tp_sum-np.sum(dtIoU[t, :inds])
                             if tp_sum > 0:
-                                lrp_localisation[t, s, k, a, m] = 
-                                               total_localisation_error/tp_sum
+                                lrp_loc[t, s, k, a, m] = total_loc_error/tp_sum
                             else: 
-                                lrp_localisation[t, s, k, a, m] = np.nan
+                                lrp_loc[t, s, k, a, m] = np.nan
 
                             # Compute false positive component if there is detection,
                             # else it is -1 by default, and ignored
                             if tp_sum+fp_sum > 0:
-                                lrp_false_positive[t, s, k, a, m] = fp_sum/(tp_sum+fp_sum)
-                            else: 
-                                lrp_false_positive[t, s, k, a, m] = np.nan
-                            # Compute false negative component, npig is larger than 0                  
-                            lrp_false_negative[t, s, k, a, m] = fn_sum/npig
+                                lrp_fp[t, s, k, a, m] = fp_sum/(tp_sum+fp_sum)
+                            else:
+                                lrp_fp[t, s, k, a, m] = np.nan
+                            # Compute false negative component, npig is larger than 0
+                            lrp_fn[t, s, k, a, m] = fn_sum/npig
 
-                            # Compute lrp, it is never undefined                                             
-                            lrp[t, s, k, a, m] = (total_localisation_error/(1-_pe.iouThrs[t])+fp_sum+fn_sum)/(tp_sum+fp_sum+fn_sum)
+                            # Compute lrp, it is never undefined
+                            lrp[t, s, k, a, m] = (total_loc_error/(1-_pe.iouThrs[t])+fp_sum+fn_sum)/(tp_sum+fp_sum+fn_sum)
         self.eval = {
             'params': p,
             'counts': [T, R, K, A, M],
@@ -489,9 +488,9 @@ class COCOeval:
             'precision': precision,
             'recall': recall,
             'scores': scores,
-            'lrp_localisation': lrp_localisation,
-            'lrp_false_positive': lrp_false_positive,
-            'lrp_false_negative': lrp_false_negative,
+            'lrp_localisation': lrp_loc,
+            'lrp_false_positive': lrp_fp,
+            'lrp_false_negative': lrp_fn,
             'lrp': lrp, 
         }
         toc = time.time()
@@ -612,35 +611,35 @@ class COCOeval:
                                    areaRng='large',
                                    maxDets=self.params.maxDets[2])
             stats[12] = _summarize(-1, iouThr=.5,
-                                   areaRng='all', 
+                                   areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='aLRP')
             stats[13] = _summarize(-1, iouThr=.5,
-                                   areaRng='all', 
+                                   areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='aLRP_Localisation')
             stats[14] = _summarize(-1, iouThr=.5,
-                                   areaRng='all', 
+                                   areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='aLRP_false_positive')
             stats[15] = _summarize(-1, iouThr=.5,
-                                   areaRng='all', 
+                                   areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='aLRP_false_negative')
             stats[16] = _summarize(-1, iouThr=.5,
-                                   areaRng='all', 
+                                   areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP')
             stats[17] = _summarize(-1, iouThr=.5,
-                                   areaRng='all', 
+                                   areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_Localisation')
             stats[18] = _summarize(-1, iouThr=.5,
-                                   areaRng='all', 
+                                   areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_false_positive')
             stats[19] = _summarize(-1, iouThr=.5,
-                                   areaRng='all', 
+                                   areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_false_negative')                   
             return stats
@@ -662,22 +661,22 @@ class COCOeval:
             stats[11] = _summarize(-1, maxDets=20, iouThr=.5,
                                    areaRng='all',
                                    lrp_type='aLRP_Localisation')
-            stats[12] = _summarize(-1, maxDets=20, 
-                                    iouThr=.5, areaRng='all', 
-                                    lrp_type='aLRP_false_positive')
+            stats[12] = _summarize(-1, maxDets=20,
+                                   iouThr=.5, areaRng='all', 
+                                   lrp_type='aLRP_false_positive')
             stats[13] = _summarize(-1, maxDets=20, iouThr=.5, 
-                                   areaRng='all', 
+                                   areaRng='all',
                                    lrp_type='aLRP_false_negative')            
-            stats[14] = _summarize(-1, maxDets=20, iouThr=.5, 
-                                    areaRng='all', lrp_type='oLRP')
-            stats[15] = _summarize(-1, maxDets=20, iouThr=.5, 
-                                   areaRng='all', 
+            stats[14] = _summarize(-1, maxDets=20, iouThr=.5,
+                                   areaRng='all', lrp_type='oLRP')
+            stats[15] = _summarize(-1, maxDets=20, iouThr=.5,
+                                   areaRng='all',
                                    lrp_type='oLRP_Localisation')
-            stats[16] = _summarize(-1, maxDets=20, iouThr=.5, 
-                                   areaRng='all', 
+            stats[16] = _summarize(-1, maxDets=20, iouThr=.5,
+                                   areaRng='all',
                                    lrp_type='oLRP_false_positive')
-            stats[17] = _summarize(-1, maxDets=20, iouThr=.5, 
-                                   areaRng='all', 
+            stats[17] = _summarize(-1, maxDets=20, iouThr=.5,
+                                   areaRng='all',
                                    lrp_type='oLRP_false_negative')            
             return stats
 
@@ -712,9 +711,9 @@ class Params:
                                    int(np.round((1.00 - .0) / .01)) + 1,
                                    endpoint=True)
         self.scoreThrs = np.linspace(.0,
-                                   1.00,
-                                   int(np.round((1.00 - .0) / .01)) + 1,
-                                   endpoint=True)
+                                     1.00,
+                                     int(np.round((1.00 - .0) / .01)) + 1,
+                                     endpoint=True)
         self.maxDets = [1, 10, 100]
         self.areaRng = [[0**2, 1e5**2], [0**2, 32**2], [32**2, 96**2],
                         [96**2, 1e5**2]]
@@ -735,9 +734,9 @@ class Params:
                                    int(np.round((1.00 - .0) / .01)) + 1,
                                    endpoint=True)
         self.scoreThrs = np.linspace(.0,
-                                   1.00,
-                                   int(np.round((1.00 - .0) / .01)) + 1,
-                                   endpoint=True)
+                                     1.00,
+                                     int(np.round((1.00 - .0) / .01)) + 1,
+                                     endpoint=True)
         self.maxDets = [20]
         self.areaRng = [[0**2, 1e5**2], [32**2, 96**2], [96**2, 1e5**2]]
         self.areaRngLbl = ['all', 'medium', 'large']
