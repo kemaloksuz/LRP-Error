@@ -482,8 +482,8 @@ class COCOeval:
 
                             # Compute lrp, it is never undefined
                             lrp[t, s, k, a, m] = (total_loc/(1-_pe.iouThrs[t])
-                                                 + fp_sum + fn_sum) \
-                                                 / (tp_sum + fp_sum + fn_sum)
+                                                  + fp_sum + fn_sum) /
+                                                (tp_sum + fp_sum + fn_sum)
         self.eval = {
             'params': p,
             'counts': [T, R, K, A, M],
