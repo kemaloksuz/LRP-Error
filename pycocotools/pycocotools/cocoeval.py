@@ -408,8 +408,7 @@ class COCOeval:
                         [e['dtIgnore'][:, 0:maxDet] for e in E], axis=1)[:,
                                                                          inds]
                     dtIoU = np.concatenate(
-                        [e['dtIoUs'][:, 0:maxDet] for e in E], axis=1)[:,
-                                                                       inds]
+                        [e['dtIoUs'][:, 0:maxDet] for e in E], axis=1)[:, inds]
                     gtIg = np.concatenate([e['gtIgnore'] for e in E])
                     npig = np.count_nonzero(gtIg == 0)
                     if npig == 0:
@@ -460,29 +459,33 @@ class COCOeval:
                             inds = np.sum(dtScoresSorted >= s0)
                             tp_sum = np.sum(tps[t, :inds])
                             fp_sum = np.sum(fps[t, :inds])
-                            fn_sum = npig-tp_sum
+                            fn_sum = npig - tp_sum
 
                             # Compute localisation component if there is tps,
                             # else it is -1 by default, and ignored
-                            total_loc = tp_sum-np.sum(dtIoU[t, :inds])
+                            total_loc = tp_sum - np.sum(dtIoU[t, :inds])
                             if tp_sum > 0:
-                                lrp_loc[t, s, k, a, m] = total_loc/tp_sum
+                                lrp_loc[t, s, k, a, m] = total_loc / tp_sum
                             else:
                                 lrp_loc[t, s, k, a, m] = np.nan
 
                             # Compute fp component if there is detection,
                             # else it is -1 by default, and ignored
-                            if tp_sum+fp_sum > 0:
-                                lrp_fp[t, s, k, a, m] = fp_sum/(tp_sum+fp_sum)
+                            if tp_sum + fp_sum > 0:
+                                lrp_fp[t, s, k, a, 
+                                       m] = fp_sum / (tp_sum + fp_sum)
                             else:
                                 lrp_fp[t, s, k, a, m] = np.nan
                             # Compute false negative component,
                             # npig is larger than 0
-                            lrp_fn[t, s, k, a, m] = fn_sum/npig
+                            lrp_fn[t, s, k, a, m] = fn_sum / npig
 
                             # Compute lrp, it is never undefined
                             tau = _pe.iouThrs[t]
-                            lrp[t, s, k, a, m] = (total_loc/(1-tau) + fp_sum + fn_sum)/(tp_sum + fp_sum + fn_sum)  # noqa: E501
+                            lrp[t, s, k, a, 
+                                m] = (total_loc/(1-tau) + fp_sum +
+                                      fn_sum) / (tp_sum + fp_sum + fn_sum
+                                                 )
         self.eval = {
             'params': p,
             'counts': [T, R, K, A, M],
@@ -504,7 +507,11 @@ class COCOeval:
         Note this functin can *only* be applied on the default parameter
         setting
         '''
-        def _summarize(ap=1, iouThr=None, areaRng='all', maxDets=100, lrp_type=None):  # noqa: E501
+        def _summarize(ap=1,
+                       iouThr=None,
+                       areaRng='all',
+                       maxDets=100,
+                       lrp_type=None):
             p = self.params
             iStr = '{:<18} {} @[ IoU={:<9} | area={:>6s} | maxDets={:>3d} ] = {:0.3f}'  # noqa: E501
             titleStr = 'Average Precision' if ap == 1 else 'Average Recall'
@@ -619,23 +626,28 @@ class COCOeval:
             stats[11] = _summarize(0,
                                    areaRng='large',
                                    maxDets=self.params.maxDets[2])
-            stats[12] = _summarize(-1, iouThr=.5,
+            stats[12] = _summarize(-1,
+                                   iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='aLRP')
-            stats[13] = _summarize(-1, iouThr=.5,
+            stats[13] = _summarize(-1,
+                                   iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='aLRP_Localisation')
-            stats[14] = _summarize(-1, iouThr=.5,
+            stats[14] = _summarize(-1,
+                                   iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='aLRP_false_positive')
-            stats[15] = _summarize(-1, iouThr=.5,
+            stats[15] = _summarize(-1,
+                                   iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='aLRP_false_negative')
-            stats[16] = _summarize(-1, iouThr=.5,
+            stats[16] = _summarize(-1,
+                                   iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP')
@@ -643,11 +655,13 @@ class COCOeval:
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_Localisation')
-            stats[18] = _summarize(-1, iouThr=.5,
+            stats[18] = _summarize(-1,
+                                   iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_false_positive')
-            stats[19] = _summarize(-1, iouThr=.5,
+            stats[19] = _summarize(-1,
+                                   iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_false_negative')
@@ -665,26 +679,43 @@ class COCOeval:
             stats[7] = _summarize(0, maxDets=20, iouThr=.75)
             stats[8] = _summarize(0, maxDets=20, areaRng='medium')
             stats[9] = _summarize(0, maxDets=20, areaRng='large')
-            stats[10] = _summarize(-1, maxDets=20, iouThr=.5,
-                                   areaRng='all', lrp_type='aLRP')
-            stats[11] = _summarize(-1, maxDets=20, iouThr=.5,
+            stats[10] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
+                                   areaRng='all',
+                                   lrp_type='aLRP')
+            stats[11] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
                                    areaRng='all',
                                    lrp_type='aLRP_Localisation')
-            stats[12] = _summarize(-1, maxDets=20,
-                                   iouThr=.5, areaRng='all',
+            stats[12] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
+                                   areaRng='all',
                                    lrp_type='aLRP_false_positive')
-            stats[13] = _summarize(-1, maxDets=20, iouThr=.5,
+            stats[13] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
                                    areaRng='all',
                                    lrp_type='aLRP_false_negative')
-            stats[14] = _summarize(-1, maxDets=20, iouThr=.5,
+            stats[14] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
                                    areaRng='all', lrp_type='oLRP')
-            stats[15] = _summarize(-1, maxDets=20, iouThr=.5,
+            stats[15] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
                                    areaRng='all',
                                    lrp_type='oLRP_Localisation')
-            stats[16] = _summarize(-1, maxDets=20, iouThr=.5,
+            stats[16] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
                                    areaRng='all',
                                    lrp_type='oLRP_false_positive')
-            stats[17] = _summarize(-1, maxDets=20, iouThr=.5,
+            stats[17] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
                                    areaRng='all',
                                    lrp_type='oLRP_false_negative')
             return stats
