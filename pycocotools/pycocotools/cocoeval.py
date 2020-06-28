@@ -539,8 +539,7 @@ class COCOeval:
                 s = s[:, :, aind, mind]
             else:
                 # # dimension of LRP: [TxSxKxAxM]
-                if iouThr is not None:
-                    t = np.where(iouThr == p.iouThrs)[0]
+                t = np.where(iouThr == p.iouThrs)[0]
                 if lrp_type == 'aLRP':
                     s = self.eval['lrp'][t, :, :, aind, mind]
                     titleStr = 'Average LRP'
