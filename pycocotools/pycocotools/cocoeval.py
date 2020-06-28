@@ -483,7 +483,7 @@ class COCOeval:
                             # Compute lrp, it is never undefined
                             tau = _pe.iouThrs[t]
                             lrp[t, s, k, a,
-                                m] = (total_loc / (1-tau) + fp_sum +
+                                m] = (total_loc / (1 - tau) + fp_sum +
                                       fn_sum) / (tp_sum + fp_sum + fn_sum)
         self.eval = {
             'params': p,
