@@ -483,9 +483,8 @@ class COCOeval:
                             # Compute lrp, it is never undefined
                             tau = _pe.iouThrs[t]
                             lrp[t, s, k, a,
-                                m] = (total_loc/(1-tau) + fp_sum +
-                                      fn_sum) / (tp_sum + fp_sum + fn_sum
-                                                 )
+                                m] = (total_loc / (1-tau) + fp_sum +
+                                      fn_sum) / (tp_sum + fp_sum + fn_sum)
         self.eval = {
             'params': p,
             'counts': [T, R, K, A, M],
@@ -651,7 +650,8 @@ class COCOeval:
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP')
-            stats[17] = _summarize(-1, iouThr=.5,
+            stats[17] = _summarize(-1,
+                                   iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_Localisation')
@@ -702,7 +702,8 @@ class COCOeval:
             stats[14] = _summarize(-1,
                                    maxDets=20,
                                    iouThr=.5,
-                                   areaRng='all', lrp_type='oLRP')
+                                   areaRng='all',
+                                   lrp_type='oLRP')
             stats[15] = _summarize(-1,
                                    maxDets=20,
                                    iouThr=.5,
