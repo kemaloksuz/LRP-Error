@@ -331,7 +331,7 @@ class COCOeval:
             'dtScores': [d['score'] for d in dt],
             'gtIgnore': gtIg,
             'dtIgnore': dtIg,
-            'dtIoUs' : dtIoU,
+            'dtIoUs': dtIoU,
         }
 
     def accumulate(self, p=None):
@@ -409,7 +409,7 @@ class COCOeval:
                                                                          inds]
                     dtIoU = np.concatenate(
                         [e['dtIoUs'][:, 0:maxDet] for e in E], axis=1)[:,
-                                                                         inds]
+                                                                       inds]
                     gtIg = np.concatenate([e['gtIgnore'] for e in E])
                     npig = np.count_nonzero(gtIg == 0)
                     if npig == 0:
@@ -467,10 +467,10 @@ class COCOeval:
                             total_loc_error = tp_sum-np.sum(dtIoU[t, :inds])
                             if tp_sum > 0:
                                 lrp_loc[t, s, k, a, m] = total_loc_error/tp_sum
-                            else: 
+                            else:
                                 lrp_loc[t, s, k, a, m] = np.nan
 
-                            # Compute false positive component if there is detection,
+                            # Compute fp component if there is detection,
                             # else it is -1 by default, and ignored
                             if tp_sum+fp_sum > 0:
                                 lrp_fp[t, s, k, a, m] = fp_sum/(tp_sum+fp_sum)
@@ -480,7 +480,9 @@ class COCOeval:
                             lrp_fn[t, s, k, a, m] = fn_sum/npig
 
                             # Compute lrp, it is never undefined
-                            lrp[t, s, k, a, m] = (total_loc_error/(1-_pe.iouThrs[t])+fp_sum+fn_sum)/(tp_sum+fp_sum+fn_sum)
+                            lrp[t, s, k, a, m] = (total_loc_error/(1-_pe.iouThrs[t])
+                                                 +fp_sum+fn_sum)
+                                                 /(tp_sum+fp_sum+fn_sum)
         self.eval = {
             'params': p,
             'counts': [T, R, K, A, M],
@@ -488,10 +490,10 @@ class COCOeval:
             'precision': precision,
             'recall': recall,
             'scores': scores,
-            'lrp_localisation': lrp_loc,
-            'lrp_false_positive': lrp_fp,
-            'lrp_false_negative': lrp_fn,
-            'lrp': lrp, 
+            'lrp_loc': lrp_loc,
+            'lrp_fp': lrp_fp,
+            'lrp_fn': lrp_fn,
+            'lrp': lrp,
         }
         toc = time.time()
         print('DONE (t={:0.2f}s).'.format(toc - tic))
@@ -540,37 +542,37 @@ class COCOeval:
                     titleStr = 'Average LRP'
                     typeStr = '    '
                 if lrp_type == 'aLRP_Localisation':
-                    s = self.eval['lrp_localisation'][t, :, :, aind, mind]
+                    s = self.eval['lrp_loc'][t, :, :, aind, mind]
                     s = np.nanmean(s[0], axis=0)
                     titleStr = 'Average LRP Loc'
                     typeStr = '    '
                 if lrp_type == 'aLRP_false_positive':
-                    s = self.eval['lrp_false_positive'][t, :, :, aind, mind]
+                    s = self.eval['lrp_fp'][t, :, :, aind, mind]
                     s = np.nanmean(s[0], axis=0)
                     titleStr = 'Average LRP FP'
                     typeStr = '    '
                 if lrp_type == 'aLRP_false_negative':
-                    s = self.eval['lrp_false_negative'][t, :, :, aind, mind]
+                    s = self.eval['lrp_fn'][t, :, :, aind, mind]
                     titleStr = 'Average LRP FN'
                     typeStr = '    '
                 if lrp_type == 'oLRP':
-                    optimal_thresholds = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
-                    s = self.eval['lrp'][t, optimal_thresholds, range(optimal_thresholds.shape[1]), aind, mind]
+                    opt_thr = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
+                    s = self.eval['lrp'][t, opt_thr, range(opt_thr.shape[1]), aind, mind]
                     titleStr = 'Optimal LRP'
                     typeStr = '    '
                 if lrp_type == 'oLRP_Localisation':
-                    optimal_thresholds = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
-                    s = self.eval['lrp_localisation'][t, optimal_thresholds, range(optimal_thresholds.shape[1]), aind, mind]
+                    opt_thr = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
+                    s = self.eval['lrp_loc'][t, opt_thr, range(opt_thr.shape[1]), aind, mind]
                     titleStr = 'Optimal LRP Loc'
                     typeStr = '    '
                 if lrp_type == 'oLRP_false_positive':
-                    optimal_thresholds = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
-                    s = self.eval['lrp_false_positive'][t, optimal_thresholds, range(optimal_thresholds.shape[1]), aind, mind]
+                    opt_thr = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
+                    s = self.eval['lrp_fp'][t, opt_thr, range(opt_thr.shape[1]), aind, mind]
                     titleStr = 'Optimal LRP FP'
                     typeStr = '    '
                 if lrp_type == 'oLRP_false_negative':
-                    optimal_thresholds = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
-                    s = self.eval['lrp_false_negative'][t, optimal_thresholds, range(optimal_thresholds.shape[1]), aind, mind]
+                    opt_thr = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
+                    s = self.eval['lrp_fn'][t, opt_thr, range(opt_thr.shape[1]), aind, mind]
                     titleStr = 'Optimal LRP FN'
                     typeStr = '    '
             if len(s[s > -1]) == 0:
@@ -641,7 +643,7 @@ class COCOeval:
             stats[19] = _summarize(-1, iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
-                                   lrp_type='oLRP_false_negative')                   
+                                   lrp_type='oLRP_false_negative')
             return stats
 
         def _summarizeKps():
@@ -662,11 +664,11 @@ class COCOeval:
                                    areaRng='all',
                                    lrp_type='aLRP_Localisation')
             stats[12] = _summarize(-1, maxDets=20,
-                                   iouThr=.5, areaRng='all', 
+                                   iouThr=.5, areaRng='all',
                                    lrp_type='aLRP_false_positive')
-            stats[13] = _summarize(-1, maxDets=20, iouThr=.5, 
+            stats[13] = _summarize(-1, maxDets=20, iouThr=.5,
                                    areaRng='all',
-                                   lrp_type='aLRP_false_negative')            
+                                   lrp_type='aLRP_false_negative')
             stats[14] = _summarize(-1, maxDets=20, iouThr=.5,
                                    areaRng='all', lrp_type='oLRP')
             stats[15] = _summarize(-1, maxDets=20, iouThr=.5,
@@ -677,7 +679,7 @@ class COCOeval:
                                    lrp_type='oLRP_false_positive')
             stats[17] = _summarize(-1, maxDets=20, iouThr=.5,
                                    areaRng='all',
-                                   lrp_type='oLRP_false_negative')            
+                                   lrp_type='oLRP_false_negative')
             return stats
 
         if not self.eval:
