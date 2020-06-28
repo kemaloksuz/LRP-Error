@@ -464,9 +464,9 @@ class COCOeval:
 
                             # Compute localisation component if there is tps,
                             # else it is -1 by default, and ignored
-                            total_loc_error = tp_sum-np.sum(dtIoU[t, :inds])
+                            total_loc = tp_sum-np.sum(dtIoU[t, :inds])
                             if tp_sum > 0:
-                                lrp_loc[t, s, k, a, m] = total_loc_error/tp_sum
+                                lrp_loc[t, s, k, a, m] = total_loc/tp_sum
                             else:
                                 lrp_loc[t, s, k, a, m] = np.nan
 
@@ -476,13 +476,14 @@ class COCOeval:
                                 lrp_fp[t, s, k, a, m] = fp_sum/(tp_sum+fp_sum)
                             else:
                                 lrp_fp[t, s, k, a, m] = np.nan
-                            # Compute false negative component, npig is larger than 0
+                            # Compute false negative component, 
+                            # npig is larger than 0
                             lrp_fn[t, s, k, a, m] = fn_sum/npig
 
                             # Compute lrp, it is never undefined
-                            lrp[t, s, k, a, m] = (total_loc_error/(1-_pe.iouThrs[t])
-                                                 +fp_sum+fn_sum)
-                                                 /(tp_sum+fp_sum+fn_sum)
+                            lrp[t, s, k, a, m] = (total_loc / (1-_pe.iouThrs[t])
+                                                  + fp_sum + fn_sum)
+                                                  / (tp_sum + fp_sum + fn_sum)
         self.eval = {
             'params': p,
             'counts': [T, R, K, A, M],
@@ -504,7 +505,7 @@ class COCOeval:
         Note this functin can *only* be applied on the default parameter
         setting
         '''
-        def _summarize(ap=1, iouThr=None, areaRng='all', maxDets=100, lrp_type=None):
+        def _summarize(ap=1, iouThr=None, areaRng='all', maxDets=100, lrp_type=None):  # noqa: E501
             p = self.params
             iStr = '{:<18} {} @[ IoU={:<9} | area={:>6s} | maxDets={:>3d} ] = {:0.3f}'  # noqa: E501
             titleStr = 'Average Precision' if ap == 1 else 'Average Recall'
@@ -533,10 +534,6 @@ class COCOeval:
                 s = s[:, :, aind, mind]
             else:
                 # # dimension of LRP: [TxSxKxAxM]
-                s = self.eval['lrp']
-                if iouThr is not None:
-                    t = np.where(iouThr == p.iouThrs)[0]
-                    s = s[t]
                 if lrp_type == 'aLRP':
                     s = self.eval['lrp'][t, :, :, aind, mind]
                     titleStr = 'Average LRP'
@@ -556,23 +553,31 @@ class COCOeval:
                     titleStr = 'Average LRP FN'
                     typeStr = '    '
                 if lrp_type == 'oLRP':
-                    opt_thr = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
-                    s = self.eval['lrp'][t, opt_thr, range(opt_thr.shape[1]), aind, mind]
+                    s = self.eval['lrp']
+                    opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
+                    cl_num = opt_thr.shape[1]
+                    s = self.eval['lrp'][t, opt_thr, range(cl_num), aind, mind]
                     titleStr = 'Optimal LRP'
                     typeStr = '    '
                 if lrp_type == 'oLRP_Localisation':
-                    opt_thr = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
-                    s = self.eval['lrp_loc'][t, opt_thr, range(opt_thr.shape[1]), aind, mind]
+                    s = self.eval['lrp']                    
+                    opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
+                    cl_num = opt_thr.shape[1]
+                    s = self.eval['lrp_loc'][t, opt_thr, range(cl_num), aind, mind]
                     titleStr = 'Optimal LRP Loc'
                     typeStr = '    '
                 if lrp_type == 'oLRP_false_positive':
-                    opt_thr = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
-                    s = self.eval['lrp_fp'][t, opt_thr, range(opt_thr.shape[1]), aind, mind]
+                    s = self.eval['lrp']
+                    opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
+                    cl_num = opt_thr.shape[1]                    
+                    s = self.eval['lrp_fp'][t, opt_thr, range(cl_num), aind, mind]
                     titleStr = 'Optimal LRP FP'
                     typeStr = '    '
                 if lrp_type == 'oLRP_false_negative':
-                    opt_thr = np.argmin(self.eval['lrp'][t, :, :, aind, mind], axis=1)
-                    s = self.eval['lrp_fn'][t, opt_thr, range(opt_thr.shape[1]), aind, mind]
+                    s = self.eval['lrp']
+                    opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
+                    cl_num = opt_thr.shape[1]                    
+                    s = self.eval['lrp_fn'][t, opt_thr, range(cl_num), aind, mind]
                     titleStr = 'Optimal LRP FN'
                     typeStr = '    '
             if len(s[s > -1]) == 0:
@@ -658,7 +663,7 @@ class COCOeval:
             stats[7] = _summarize(0, maxDets=20, iouThr=.75)
             stats[8] = _summarize(0, maxDets=20, areaRng='medium')
             stats[9] = _summarize(0, maxDets=20, areaRng='large')
-            stats[10] = _summarize(-1, maxDets=20, iouThr=.5, 
+            stats[10] = _summarize(-1, maxDets=20, iouThr=.5,
                                    areaRng='all', lrp_type='aLRP')
             stats[11] = _summarize(-1, maxDets=20, iouThr=.5,
                                    areaRng='all',
