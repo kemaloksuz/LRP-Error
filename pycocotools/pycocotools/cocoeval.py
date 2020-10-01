@@ -456,30 +456,39 @@ class COCOeval:
                         scores[t, :, k, a, m] = np.array(ss)
 
                     #### oLRP and threshold Computation ####
+
+                    # Compute TP number on each detection
                     tp_num = np.cumsum(tps[0, :])
+                    # Compute FP number on each detection
                     fp_num = np.cumsum(fps[0, :])
+                    # Compute FN number on each detection
                     fn_num = npig - tp_num
-                    # If there is detection
+                    # There is detection
                     if tp_num.shape[0] > 0:
                         # There is TP
                         if tp_num[-1] > 0:
+                            # Compute total localisation error
                             total_loc = tp_num - np.cumsum(dtIoU[0, :])
+                            # Compute LRP Error on each detection
                             lrps = (total_loc / (1 - _pe.iouThrs[0]) + fp_num +
                                 fn_num) / (tp_num + fp_num + fn_num)
+                            # Find index of oLRP
                             opt_pos_idx = np.argmin(lrps)
+                            # Assign oLRP and components
                             olrp[k, a, m] = lrps[opt_pos_idx]
                             olrp_loc[k, a, m] = total_loc[opt_pos_idx] / tp_num[opt_pos_idx]
                             olrp_fp[k, a, m] = fp_num[opt_pos_idx] / (tp_num[opt_pos_idx] + fp_num[opt_pos_idx])
                             olrp_fn[k, a, m] = fn_num[opt_pos_idx] / npig
+                            # Find LRP-optimal threshold
                             lrp_opt_thr[k, a, m] = dtScoresSorted[opt_pos_idx]
-                        # There is No TP
+                        # There is No TP. Assign errors appropriately.
                         else:
                             olrp_loc[k, a, m] = np.nan
                             olrp_fp[k, a, m] = np.nan
                             olrp_fn[k, a, m] = 1.
                             olrp[k, a, m] = 1.
                             lrp_opt_thr[k, a, m] = np.nan
-                    # No detection
+                    # No detection. Assign errors appropriately.
                     else:
                         olrp_loc[k, a, m] = np.nan
                         olrp_fp[k, a, m] = np.nan
