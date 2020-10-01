@@ -360,10 +360,11 @@ class COCOeval:
             (T, R, K, A, M))  # -1 for the precision of absent categories
         recall = -np.ones((T, K, A, M))
         scores = -np.ones((T, R, K, A, M))
-        lrp_loc = -np.ones((T, S, K, A, M))
-        lrp_fp = -np.ones((T, S, K, A, M))
-        lrp_fn = -np.ones((T, S, K, A, M))
-        lrp = -np.ones((T, S, K, A, M))
+        olrp_loc = -np.ones((K, A, M))
+        olrp_fp = -np.ones((K, A, M))
+        olrp_fn = -np.ones((K, A, M))
+        olrp = -np.ones((K, A, M))
+        lrp_opt_thr = -np.ones((K, A, M))
 
         # create dictionary for future indexing
         _pe = self._paramsEval
@@ -453,38 +454,38 @@ class COCOeval:
                             pass
                         precision[t, :, k, a, m] = np.array(q)
                         scores[t, :, k, a, m] = np.array(ss)
-                        for s, s0 in enumerate(_pe.scoreThrs):
-                            # Threshold the detection set,
-                            # and count tp fp and fn
-                            inds = np.sum(dtScoresSorted >= s0)
-                            tp_sum = np.sum(tps[t, :inds])
-                            fp_sum = np.sum(fps[t, :inds])
-                            fn_sum = npig - tp_sum
 
-                            # Compute localisation component if there is tps,
-                            # else it is -1 by default, and ignored
-                            total_loc = tp_sum - np.sum(dtIoU[t, :inds])
-                            if tp_sum > 0:
-                                lrp_loc[t, s, k, a, m] = total_loc / tp_sum
-                            else:
-                                lrp_loc[t, s, k, a, m] = np.nan
-
-                            # Compute fp component if there is detection,
-                            # else it is -1 by default, and ignored
-                            if tp_sum + fp_sum > 0:
-                                lrp_fp[t, s, k, a,
-                                       m] = fp_sum / (tp_sum + fp_sum)
-                            else:
-                                lrp_fp[t, s, k, a, m] = np.nan
-                            # Compute false negative component,
-                            # npig is larger than 0
-                            lrp_fn[t, s, k, a, m] = fn_sum / npig
-
-                            # Compute lrp, it is never undefined
-                            tau = _pe.iouThrs[t]
-                            lrp[t, s, k, a,
-                                m] = (total_loc / (1 - tau) + fp_sum +
-                                      fn_sum) / (tp_sum + fp_sum + fn_sum)
+                    #### oLRP and threshold Computation ####
+                    tp_num = np.cumsum(tps[0, :])
+                    fp_num = np.cumsum(fps[0, :])
+                    fn_num = npig - tp_num
+                    # If there is detection
+                    if tp_num.shape[0] > 0:
+                        # There is TP
+                        if tp_num[-1] > 0:
+                            total_loc = tp_num - np.cumsum(dtIoU[0, :])
+                            lrps = (total_loc / (1 - _pe.iouThrs[0]) + fp_num +
+                                fn_num) / (tp_num + fp_num + fn_num)
+                            opt_pos_idx = np.argmin(lrps)
+                            olrp[k, a, m] = lrps[opt_pos_idx]
+                            olrp_loc[k, a, m] = total_loc[opt_pos_idx] / tp_num[opt_pos_idx]
+                            olrp_fp[k, a, m] = fp_num[opt_pos_idx] / (tp_num[opt_pos_idx] + fp_num[opt_pos_idx])
+                            olrp_fn[k, a, m] = fn_num[opt_pos_idx] / npig
+                            lrp_opt_thr[k, a, m] = dtScoresSorted[opt_pos_idx]
+                        # There is No TP
+                        else:
+                            olrp_loc[k, a, m] = np.nan
+                            olrp_fp[k, a, m] = np.nan
+                            olrp_fn[k, a, m] = 1.
+                            olrp[k, a, m] = 1.
+                            lrp_opt_thr[k, a, m] = np.nan
+                    # No detection
+                    else:
+                        olrp_loc[k, a, m] = np.nan
+                        olrp_fp[k, a, m] = np.nan
+                        olrp_fn[k, a, m] = 1.
+                        olrp[k, a, m] = 1.
+                        lrp_opt_thr[k, a, m] = np.nan
         self.eval = {
             'params': p,
             'counts': [T, R, K, A, M],
@@ -492,10 +493,11 @@ class COCOeval:
             'precision': precision,
             'recall': recall,
             'scores': scores,
-            'lrp_loc': lrp_loc,
-            'lrp_fp': lrp_fp,
-            'lrp_fn': lrp_fn,
-            'lrp': lrp,
+            'olrp_loc': olrp_loc,
+            'olrp_fp': olrp_fp,
+            'olrp_fn': olrp_fn,
+            'olrp': olrp,
+            'lrp_opt_thr': lrp_opt_thr,
         }
         toc = time.time()
         print('DONE (t={:0.2f}s).'.format(toc - tic))
@@ -530,6 +532,10 @@ class COCOeval:
                     t = np.where(iouThr == p.iouThrs)[0]
                     s = s[t]
                 s = s[:, :, :, aind, mind]
+                if len(s[s > -1]) == 0:
+                    mean_s = -1
+                else:
+                    mean_s = np.mean(s[s > -1])
             elif ap == 0:
                 # dimension of recall: [TxKxAxM]
                 s = self.eval['recall']
@@ -538,57 +544,33 @@ class COCOeval:
                     s = s[t]
                 s = s[:, :, aind, mind]
             else:
-                # # dimension of LRP: [TxSxKxAxM]
-                t = np.where(iouThr == p.iouThrs)[0]
-                if lrp_type == 'aLRP':
-                    s = self.eval['lrp'][t, :, :, aind, mind]
-                    titleStr = 'Average LRP'
-                    typeStr = '    '
-                if lrp_type == 'aLRP_Localisation':
-                    s = self.eval['lrp_loc'][t, :, :, aind, mind]
-                    s = np.nanmean(s[0], axis=0)
-                    titleStr = 'Average LRP Loc'
-                    typeStr = '    '
-                if lrp_type == 'aLRP_false_positive':
-                    s = self.eval['lrp_fp'][t, :, :, aind, mind]
-                    s = np.nanmean(s[0], axis=0)
-                    titleStr = 'Average LRP FP'
-                    typeStr = '    '
-                if lrp_type == 'aLRP_false_negative':
-                    s = self.eval['lrp_fn'][t, :, :, aind, mind]
-                    titleStr = 'Average LRP FN'
-                    typeStr = '    '
+                # # dimension of LRP: [KxAxM]
+                # Person 0, Broccoli 50
                 if lrp_type == 'oLRP':
-                    s = self.eval['lrp']
-                    opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
-                    cl_num = opt_thr.shape[1]
-                    s = self.eval['lrp'][t, opt_thr, range(cl_num), aind, mind]
+                    s = self.eval['olrp'][:, aind, mind]
                     titleStr = 'Optimal LRP'
                     typeStr = '    '
                 if lrp_type == 'oLRP_Localisation':
-                    s = self.eval['lrp']
-                    opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
-                    cl_num = opt_thr.shape[1]
-                    s = self.eval['lrp_loc']
-                    s = s[t, opt_thr, range(cl_num), aind, mind]
+                    s = self.eval['olrp_loc'][:, aind, mind]
                     titleStr = 'Optimal LRP Loc'
                     typeStr = '    '
                 if lrp_type == 'oLRP_false_positive':
-                    s = self.eval['lrp']
-                    opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
-                    cl_num = opt_thr.shape[1]
-                    s = self.eval['lrp_fp']
-                    s = s[t, opt_thr, range(cl_num), aind, mind]
+                    s = self.eval['olrp_fp'][:, aind, mind]
                     titleStr = 'Optimal LRP FP'
                     typeStr = '    '
                 if lrp_type == 'oLRP_false_negative':
-                    s = self.eval['lrp']
-                    opt_thr = np.argmin(s[t, :, :, aind, mind], axis=1)
-                    cl_num = opt_thr.shape[1]
-                    s = self.eval['lrp_fn']
-                    s = s[t, opt_thr, range(cl_num), aind, mind]
+                    s = self.eval['olrp_fn'][:, aind, mind]
                     titleStr = 'Optimal LRP FN'
                     typeStr = '    '
+                if lrp_type == 'oLRP_thresholds':
+                    s = self.eval['lrp_opt_thr'][:, aind, mind].squeeze(axis = 1)
+                    titleStr = '#### Class-specific LRP-optimal thresholds #### \n'
+                    typeStr = '    '
+                    # Floor by using 3 decimal digits            
+                    print(titleStr, np.round(s - 0.5 * 10**(-3), 3))
+                    return s 
+            idx = (~np.isnan(s))  
+            s = s[idx]
             if len(s[s > -1]) == 0:
                 mean_s = -1
             else:
@@ -599,7 +581,7 @@ class COCOeval:
             return mean_s
 
         def _summarizeDets():
-            stats = np.zeros((20, ))
+            stats = np.zeros((17, ))
             stats[0] = _summarize(1)
             stats[1] = _summarize(1, iouThr=.5, maxDets=self.params.maxDets[2])
             stats[2] = _summarize(1,
@@ -630,46 +612,29 @@ class COCOeval:
                                    iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
-                                   lrp_type='aLRP')
+                                   lrp_type='oLRP')
             stats[13] = _summarize(-1,
                                    iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
-                                   lrp_type='aLRP_Localisation')
+                                   lrp_type='oLRP_Localisation')
             stats[14] = _summarize(-1,
                                    iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
-                                   lrp_type='aLRP_false_positive')
+                                   lrp_type='oLRP_false_positive')
             stats[15] = _summarize(-1,
                                    iouThr=.5,
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
-                                   lrp_type='aLRP_false_negative')
-            stats[16] = _summarize(-1,
-                                   iouThr=.5,
-                                   areaRng='all',
-                                   maxDets=self.params.maxDets[2],
-                                   lrp_type='oLRP')
-            stats[17] = _summarize(-1,
-                                   iouThr=.5,
-                                   areaRng='all',
-                                   maxDets=self.params.maxDets[2],
-                                   lrp_type='oLRP_Localisation')
-            stats[18] = _summarize(-1,
-                                   iouThr=.5,
-                                   areaRng='all',
-                                   maxDets=self.params.maxDets[2],
-                                   lrp_type='oLRP_false_positive')
-            stats[19] = _summarize(-1,
-                                   iouThr=.5,
-                                   areaRng='all',
-                                   maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_false_negative')
+            _summarize(-1, iouThr=.5, areaRng='all',
+                        maxDets=self.params.maxDets[2],
+                        lrp_type='oLRP_thresholds')
             return stats
 
         def _summarizeKps():
-            stats = np.zeros((18, ))
+            stats = np.zeros((14, ))
             stats[0] = _summarize(1, maxDets=20)
             stats[1] = _summarize(1, maxDets=20, iouThr=.5)
             stats[2] = _summarize(1, maxDets=20, iouThr=.75)
@@ -684,42 +649,24 @@ class COCOeval:
                                    maxDets=20,
                                    iouThr=.5,
                                    areaRng='all',
-                                   lrp_type='aLRP')
+                                   lrp_type='oLRP')
             stats[11] = _summarize(-1,
                                    maxDets=20,
                                    iouThr=.5,
                                    areaRng='all',
-                                   lrp_type='aLRP_Localisation')
+                                   lrp_type='oLRP_Localisation')
             stats[12] = _summarize(-1,
                                    maxDets=20,
                                    iouThr=.5,
                                    areaRng='all',
-                                   lrp_type='aLRP_false_positive')
+                                   lrp_type='oLRP_false_positive')
             stats[13] = _summarize(-1,
                                    maxDets=20,
                                    iouThr=.5,
                                    areaRng='all',
-                                   lrp_type='aLRP_false_negative')
-            stats[14] = _summarize(-1,
-                                   maxDets=20,
-                                   iouThr=.5,
-                                   areaRng='all',
-                                   lrp_type='oLRP')
-            stats[15] = _summarize(-1,
-                                   maxDets=20,
-                                   iouThr=.5,
-                                   areaRng='all',
-                                   lrp_type='oLRP_Localisation')
-            stats[16] = _summarize(-1,
-                                   maxDets=20,
-                                   iouThr=.5,
-                                   areaRng='all',
-                                   lrp_type='oLRP_false_positive')
-            stats[17] = _summarize(-1,
-                                   maxDets=20,
-                                   iouThr=.5,
-                                   areaRng='all',
                                    lrp_type='oLRP_false_negative')
+            _summarize(-1, iouThr=.5, areaRng='all',
+                        maxDets=20, lrp_type='oLRP_thresholds')
             return stats
 
         if not self.eval:
