@@ -1,6 +1,7 @@
+import pylab
 from pycocotool.coco import COCO
 from pycocotool.cocoeval import COCOeval
-import pylab
+
 pylab.rcParams['figure.figsize'] = (10.0, 8.0)
 
 # Specify result file. It can be a result file from an object detector,
