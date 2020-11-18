@@ -23,10 +23,8 @@ try:
     # sys.path.append('./cocoapi-master/PythonAPI/')
     from pycocotools.coco import COCO as COCO
 except Exception:
-    raise Exception(
-        "Please install pycocotools module from \
-        https://github.com/cocodataset/cocoapi"
-    )
+    raise Exception("Please install pycocotools module from \
+        https://github.com/cocodataset/cocoapi")
 
 
 @get_traceback

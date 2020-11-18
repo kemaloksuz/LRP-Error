@@ -15,10 +15,8 @@ try:
     # sys.path.append('./cityscapesScripts/')
     from cityscapesscripts.helpers.labels import labels
 except Exception:
-    raise Exception(
-        "Please load Cityscapes scripts from \
-        https://github.com/mcordts/cityscapesScripts"
-    )
+    raise Exception("Please load Cityscapes scripts from \
+        https://github.com/mcordts/cityscapesScripts")
 
 original_format_folder = './gtFine/val/'
 # folder to store panoptic PNGs

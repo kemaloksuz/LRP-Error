@@ -154,11 +154,11 @@ def pq_lrp_compute_single_core(proc_id, annotation_set, gt_folder, pred_folder,
 
         pan_gt = np.array(Image.open(
             os.path.join(gt_folder, gt_ann['file_name'])),
-            dtype=np.uint32)
+                          dtype=np.uint32)
         pan_gt = rgb2id(pan_gt)
         pan_pred = np.array(Image.open(
             os.path.join(pred_folder, pred_ann['file_name'])),
-            dtype=np.uint32)
+                            dtype=np.uint32)
         pan_pred = rgb2id(pan_pred)
 
         gt_segms = {el['id']: el for el in gt_ann['segments_info']}
@@ -171,23 +171,21 @@ def pq_lrp_compute_single_core(proc_id, annotation_set, gt_folder, pred_folder,
             if label not in pred_segms:
                 if label == VOID:
                     continue
-                raise KeyError(
-                    'In the image with ID {} segment with ID {} is \
-                    presented in PNG and not presented in JSON.'
-                    .format(gt_ann['image_id'], label))
+                raise KeyError('In the image with ID {} segment with ID {} is \
+                    presented in PNG and not presented in JSON.'.format(
+                    gt_ann['image_id'], label))
             pred_segms[label]['area'] = label_cnt
             pred_labels_set.remove(label)
             if pred_segms[label]['category_id'] not in categories:
                 raise KeyError(
                     'In the image with ID {} segment with ID {} has \
-                    unknown category_id {}.' .format(
+                    unknown category_id {}.'.format(
                         gt_ann['image_id'], label,
                         pred_segms[label]['category_id']))
         if len(pred_labels_set) != 0:
-            raise KeyError(
-                'In the image with ID {} the following segment IDs \
-                {} are presented in JSON and not presented in PNG.'
-                .format(gt_ann['image_id'], list(pred_labels_set)))
+            raise KeyError('In the image with ID {} the following segment IDs \
+                {} are presented in JSON and not presented in PNG.'.format(
+                gt_ann['image_id'], list(pred_labels_set)))
 
         # confusion matrix calculation
         pan_gt_pred = pan_gt.astype(np.uint64) * OFFSET + pan_pred.astype(
@@ -367,15 +365,13 @@ if __name__ == "__main__":
         type=str,
         default=None,
         help="Folder with ground turth COCO format segmentations. \
-              Default: X if the corresponding json file is X.json"
-    )
+              Default: X if the corresponding json file is X.json")
     parser.add_argument(
         '--pred_folder',
         type=str,
         default=None,
         help="Folder with prediction COCO format segmentations. \
-              Default: X if the corresponding json file is X.json"
-    )
+              Default: X if the corresponding json file is X.json")
     args = parser.parse_args()
     pq_lrp_compute(args.gt_json_file, args.pred_json_file, args.gt_folder,
                    args.pred_folder)

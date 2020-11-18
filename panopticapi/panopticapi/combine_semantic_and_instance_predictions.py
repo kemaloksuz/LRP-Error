@@ -27,10 +27,8 @@ from panopticapi.utils import IdGenerator, id2rgb, save_json
 try:
     from pycocotools import mask as COCOmask
 except Exception:
-    raise Exception(
-        "Please install pycocotools module from\
-        https://github.com/cocodataset/cocoapi"
-    )
+    raise Exception("Please install pycocotools module from\
+        https://github.com/cocodataset/cocoapi")
 
 
 def combine_to_panoptic_single_core(proc_id, img_ids, img_id2img,
@@ -225,21 +223,18 @@ if __name__ == "__main__":
                         help="Folder with \
          panoptic COCO format segmentations.\
          Default: X if panoptic_json_file is X.json")
-    parser.add_argument(
-        '--confidence_thr',
-        type=float,
-        default=0.5,
-        help="Predicted segments with smaller confidences than\
-        the threshold are filtered out"
-    )
+    parser.add_argument('--confidence_thr',
+                        type=float,
+                        default=0.5,
+                        help="Predicted segments with smaller confidences than\
+        the threshold are filtered out")
     parser.add_argument(
         '--overlap_thr',
         type=float,
         default=0.5,
         help="Segments that have higher that the threshold ratio of \
                         their area being overlapped by segments with \
-                        higher confidence are filtered out"
-    )
+                        higher confidence are filtered out")
     parser.add_argument(
         '--stuff_area_limit',
         type=float,

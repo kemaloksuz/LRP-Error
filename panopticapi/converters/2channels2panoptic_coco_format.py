@@ -50,7 +50,7 @@ def convert_single_core(proc_id,
         try:
             original_format = np.array(Image.open(
                 os.path.join(source_folder, file_name)),
-                dtype=np.uint32)
+                                       dtype=np.uint32)
         except IOError:
             raise KeyError('no prediction png file for id: {}'.format(
                 image_info['id']))
@@ -170,14 +170,12 @@ if __name__ == "__main__":
     parser.add_argument('--predictions_json_file',
                         type=str,
                         help="JSON file with resulting COCO format prediction")
-    parser.add_argument(
-        '-v',
-        '--void',
-        type=int,
-        default=0,
-        help="semantic id that corresponds to VOID region \
-        in two channels PNG format"
-    )
+    parser.add_argument('-v',
+                        '--void',
+                        type=int,
+                        default=0,
+                        help="semantic id that corresponds to VOID region \
+        in two channels PNG format")
     args = parser.parse_args()
     converter(args.source_folder, args.images_json_file,
               args.categories_json_file, args.segmentations_folder,

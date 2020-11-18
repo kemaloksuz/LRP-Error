@@ -27,10 +27,8 @@ try:
     # sys.path.append('./cocoapi-master/PythonAPI/')
     from pycocotools import mask as COCOmask
 except Exception:
-    raise Exception(
-        "Please install pycocotools module from \
-        https://github.com/cocodataset/cocoapi"
-    )
+    raise Exception("Please install pycocotools module from \
+        https://github.com/cocodataset/cocoapi")
 
 
 @get_traceback
@@ -47,7 +45,7 @@ def convert_panoptic_to_detection_coco_format_single_core(
         try:
             pan_format = np.array(Image.open(
                 os.path.join(segmentations_folder, file_name)),
-                dtype=np.uint32)
+                                  dtype=np.uint32)
         except IOError:
             raise KeyError('no prediction png file for id: {}'.format(
                 annotation['image_id']))

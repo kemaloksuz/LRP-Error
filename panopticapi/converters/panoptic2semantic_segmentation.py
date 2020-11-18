@@ -27,10 +27,8 @@ try:
     # sys.path.append('./cocoapi-master/PythonAPI/')
     from pycocotools import mask as COCOmask
 except Exception:
-    raise Exception(
-        "Please install pycocotools module from \
-        https://github.com/cocodataset/cocoapi"
-    )
+    raise Exception("Please install pycocotools module from \
+        https://github.com/cocodataset/cocoapi")
 
 OTHER_CLASS_ID = 183
 
@@ -48,7 +46,7 @@ def extract_semantic_single_core(proc_id, annotations_set,
         try:
             pan_format = np.array(Image.open(
                 os.path.join(segmentations_folder, annotation['file_name'])),
-                dtype=np.uint32)
+                                  dtype=np.uint32)
         except IOError:
             raise KeyError('no prediction png file for id: {}'.format(
                 annotation['image_id']))
@@ -184,8 +182,7 @@ if __name__ == "__main__":
         description="This script converts data in panoptic COCO format to \
         semantic segmentation. All segments with the same semantic class \
         in one image are combined together. See this file's head \
-        for more information."
-    )
+        for more information.")
     parser.add_argument('--input_json_file',
                         type=str,
                         help="JSON file with panoptic data")
