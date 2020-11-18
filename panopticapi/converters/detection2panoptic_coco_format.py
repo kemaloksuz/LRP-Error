@@ -4,8 +4,8 @@ This script converts detection COCO format to panoptic COCO format. More
 information about the formats can be found here:
 http://cocodataset.org/#format-data.
 '''
-from __future__ import (absolute_import, division,
-                        print_function, unicode_literals)
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import argparse
 import json
