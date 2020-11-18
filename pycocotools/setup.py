@@ -8,7 +8,7 @@ from setuptools import Extension, setup
 ext_modules = [
     Extension(
         'pycocotools._mask',
-        sources=['../common/maskApi.c', 'pycocotools/_mask.pyx'],
+        sources=['common/maskApi.c', 'pycocotools/_mask.pyx'],
         include_dirs=[np.get_include(), '../common'],
         extra_compile_args=['-Wno-cpp', '-Wno-unused-function', '-std=c99'],
     )
