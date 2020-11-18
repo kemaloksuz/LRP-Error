@@ -1,8 +1,5 @@
-import matplotlib.pyplot as plt
 from pycocotool.coco import COCO
 from pycocotool.cocoeval import COCOeval
-import numpy as np
-import skimage.io as io
 import pylab
 pylab.rcParams['figure.figsize'] = (10.0, 8.0)
 
@@ -10,13 +7,13 @@ pylab.rcParams['figure.figsize'] = (10.0, 8.0)
 # keypoint detector of an instance segmentation method.
 
 # Uncomment for an instance segmentation example
-# resFile = '../results/htc_x101_64x4d_fpn_dconv_c3-c5_mstrain_400_1400_16x1_20e_coco.segm.json'
+# resFile = '../results/htc_X_101.segm.json'
 
 # Uncomment for an object detection example
-resFile = '../results/faster_rcnn_R-50-FPN_2x.json'
+resFile = '../results/faster_rcnn_R_50.json'
 
 # Uncomment for a keypoint detection example
-# resFile = '../results/keypoint_rcnn_X_101_3x'
+# resFile = '../results/keypoint_rcnn_X_101.json'
 
 # initialize COCO detections api
 annType = ['segm', 'bbox', 'keypoints']

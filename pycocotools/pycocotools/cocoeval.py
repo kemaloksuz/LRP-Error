@@ -334,7 +334,8 @@ class COCOeval:
 
     def accumulate(self, p=None):
         '''
-        Accumulate per image evaluation results and store the result in self.eval
+        Accumulate per image evaluation results and
+        store the result in self.eval
         :param p: input params for evaluation
         :return: None
         '''
@@ -391,7 +392,8 @@ class COCOeval:
                     dtScores = np.concatenate(
                         [e['dtScores'][0:maxDet] for e in E])
 
-                    # different sorting method generates slightly different results.
+                    # different sorting method generates slightly
+                    # different results.
                     # mergesort is used to be consistent as Matlab
                     # implementation.
                     inds = np.argsort(-dtScores, kind='mergesort')
@@ -431,8 +433,9 @@ class COCOeval:
                         else:
                             recall[t, k, a, m] = 0
 
-                        # numpy is slow without cython optimization for accessing elements
-                        # use python array gets significant speed improvement
+                        # numpy is slow without cython optimization
+                        # for accessing elements use python array
+                        # gets significant speed improvement
                         pr = pr.tolist()
                         q = q.tolist()
 
