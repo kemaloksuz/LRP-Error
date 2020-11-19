@@ -34,8 +34,8 @@ import pycocotools._mask as _mask
 #  iou            - Compute intersection over union between masks.
 #  area           - Compute area of encoded masks.
 #  toBbox         - Get bounding boxes surrounding encoded masks.
-#  frPyObjects    - Convert polygon, bbox, and uncompressed RLE to encoded
-#                   RLE mask.
+#  frPyObjects    - Convert polygon, bbox, and uncompressed RLE
+#                   to encoded RLE mask.
 #
 # Usage:
 #  Rs     = encode( masks )
@@ -49,10 +49,10 @@ import pycocotools._mask as _mask
 # In the API the following formats are used:
 #  Rs      - [dict] Run-length encoding of binary masks
 #  R       - dict Run-length encoding of binary mask
-#  masks   - [hxwxn] Binary mask(s) (must have type np.ndarray(dtype=uint8)
-#            in column-major order)
-#  iscrowd - [nx1] list of np.ndarray. 1 indicates corresponding gt image has
-#            crowd region to ignore
+#  masks   - [hxwxn] Binary mask(s)
+#            (must have type np.ndarray(dtype=uint8) in column-major order)
+#  iscrowd - [nx1] list of np.ndarray.
+#            1 indicates corresponding gt image has crowd region to ignore
 #  bbs     - [nx4] Bounding box(es) stored as [x y w h]
 #  poly    - Polygon stored as [[x1 y1 x2 y2...],[x1 y1 ...],...] (2D list)
 #  dt,gt   - May be either bounding boxes or encoded masks
@@ -90,21 +90,21 @@ def encode(bimask):
 
 
 def decode(rleObjs):
-    if type(rleObjs) == list:
+    if isinstance(rleObjs, list):
         return _mask.decode(rleObjs)
     else:
         return _mask.decode([rleObjs])[:, :, 0]
 
 
 def area(rleObjs):
-    if type(rleObjs) == list:
+    if isinstance(rleObjs, list):
         return _mask.area(rleObjs)
     else:
         return _mask.area([rleObjs])[0]
 
 
 def toBbox(rleObjs):
-    if type(rleObjs) == list:
+    if isinstance(rleObjs, list):
         return _mask.toBbox(rleObjs)
     else:
         return _mask.toBbox([rleObjs])[0]

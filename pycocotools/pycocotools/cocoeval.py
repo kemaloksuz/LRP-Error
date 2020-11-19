@@ -71,8 +71,8 @@ class COCOeval:
             print('iouType not specified. use default iouType segm')
         self.cocoGt = cocoGt  # ground truth COCO API
         self.cocoDt = cocoDt  # detections COCO API
-        self.evalImgs = defaultdict(
-            list)  # per-image per-category evaluation results [KxAxI] elements
+        # per-image per-category evaluation results [KxAxI] elements
+        self.evalImgs = defaultdict(list)
         self.eval = {}  # accumulated evaluation results
         self._gts = defaultdict(list)  # gt for evaluation
         self._dts = defaultdict(list)  # dt for evaluation
@@ -237,10 +237,10 @@ class COCOeval:
                     # measure minimum distance to keypoints in (x0,y0) &
                     # (x1,y1)
                     z = np.zeros((k))
-                    dx = np.max((z, x0 - xd), axis=0) + np.max(
-                        (z, xd - x1), axis=0)
-                    dy = np.max((z, y0 - yd), axis=0) + np.max(
-                        (z, yd - y1), axis=0)
+                    dx = np.max((z, x0 - xd), axis=0) + \
+                        np.max((z, xd - x1), axis=0)
+                    dy = np.max((z, y0 - yd), axis=0) + \
+                        np.max((z, yd - y1), axis=0)
                 e = (dx**2 + dy**2) / vars / (gt['area'] + np.spacing(1)) / 2
                 if k1 > 0:
                     e = e[vg > 0]
@@ -336,9 +336,8 @@ class COCOeval:
 
     def accumulate(self, p=None):
         '''
-        Accumulate per image evaluation results and store the result in
-        self.eval
-
+        Accumulate per image evaluation results and
+        store the result in self.eval
         :param p: input params for evaluation
         :return: None
         '''
@@ -355,9 +354,8 @@ class COCOeval:
         K = len(p.catIds) if p.useCats else 1
         A = len(p.areaRng)
         M = len(p.maxDets)
-        S = len(p.scoreThrs)
-        precision = -np.ones(
-            (T, R, K, A, M))  # -1 for the precision of absent categories
+        # -1 for the precision of absent categories
+        precision = -np.ones((T, R, K, A, M))
         recall = -np.ones((T, K, A, M))
         scores = -np.ones((T, R, K, A, M))
         olrp_loc = -np.ones((K, A, M))
@@ -396,8 +394,9 @@ class COCOeval:
                     dtScores = np.concatenate(
                         [e['dtScores'][0:maxDet] for e in E])
 
-                    # different sorting method generates slightly different
-                    # results. mergesort is used to be consistent as Matlab
+                    # different sorting method generates slightly
+                    # different results.
+                    # mergesort is used to be consistent as Matlab
                     # implementation.
                     inds = np.argsort(-dtScores, kind='mergesort')
                     dtScoresSorted = dtScores[inds]
@@ -410,6 +409,7 @@ class COCOeval:
                                                                          inds]
                     dtIoU = np.concatenate(
                         [e['dtIoUs'][:, 0:maxDet] for e in E], axis=1)[:, inds]
+
                     gtIg = np.concatenate([e['gtIgnore'] for e in E])
                     npig = np.count_nonzero(gtIg == 0)
                     if npig == 0:
@@ -435,9 +435,9 @@ class COCOeval:
                         else:
                             recall[t, k, a, m] = 0
 
-                        # numpy is slow without cython optimization for
-                        # accessing elements use python array gets significant
-                        # speed improvement
+                        # numpy is slow without cython optimization
+                        # for accessing elements use python array
+                        # gets significant speed improvement
                         pr = pr.tolist()
                         q = q.tolist()
 
@@ -450,45 +450,38 @@ class COCOeval:
                             for ri, pi in enumerate(inds):
                                 q[ri] = pr[pi]
                                 ss[ri] = dtScoresSorted[pi]
-                        except:  # noqa: E722
+                        except BaseException:
                             pass
                         precision[t, :, k, a, m] = np.array(q)
                         scores[t, :, k, a, m] = np.array(ss)
 
-                    #### oLRP and threshold Computation ####
-
-                    # Compute TP number on each detection
+                    # oLRP and Opt.Thr. Computation
                     tp_num = np.cumsum(tps[0, :])
-                    # Compute FP number on each detection
                     fp_num = np.cumsum(fps[0, :])
-                    # Compute FN number on each detection
                     fn_num = npig - tp_num
-                    # There is detection
+                    # If there is detection
                     if tp_num.shape[0] > 0:
-                        # There is TP
+                        # There is some TPs
                         if tp_num[-1] > 0:
-                            # Compute total localisation error
                             total_loc = tp_num - np.cumsum(dtIoU[0, :])
-                            # Compute LRP Error on each detection
                             lrps = (total_loc / (1 - _pe.iouThrs[0]) + fp_num +
-                                fn_num) / (tp_num + fp_num + fn_num)
-                            # Find index of oLRP
+                                    fn_num) / (tp_num + fp_num + fn_num)
                             opt_pos_idx = np.argmin(lrps)
-                            # Assign oLRP and components
                             olrp[k, a, m] = lrps[opt_pos_idx]
-                            olrp_loc[k, a, m] = total_loc[opt_pos_idx] / tp_num[opt_pos_idx]
-                            olrp_fp[k, a, m] = fp_num[opt_pos_idx] / (tp_num[opt_pos_idx] + fp_num[opt_pos_idx])
+                            olrp_loc[k, a, m] = total_loc[opt_pos_idx] / \
+                                tp_num[opt_pos_idx]
+                            olrp_fp[k, a, m] = fp_num[opt_pos_idx] / \
+                                (tp_num[opt_pos_idx] + fp_num[opt_pos_idx])
                             olrp_fn[k, a, m] = fn_num[opt_pos_idx] / npig
-                            # Find LRP-optimal threshold
                             lrp_opt_thr[k, a, m] = dtScoresSorted[opt_pos_idx]
-                        # There is No TP. Assign errors appropriately.
+                        # There is No TP
                         else:
                             olrp_loc[k, a, m] = np.nan
                             olrp_fp[k, a, m] = np.nan
                             olrp_fn[k, a, m] = 1.
                             olrp[k, a, m] = 1.
                             lrp_opt_thr[k, a, m] = np.nan
-                    # No detection. Assign errors appropriately.
+                    # No detection
                     else:
                         olrp_loc[k, a, m] = np.nan
                         olrp_fp[k, a, m] = np.nan
@@ -572,13 +565,13 @@ class COCOeval:
                     titleStr = 'Optimal LRP FN'
                     typeStr = '    '
                 if lrp_type == 'oLRP_thresholds':
-                    s = self.eval['lrp_opt_thr'][:, aind, mind].squeeze(axis = 1)
-                    titleStr = '#### Class-specific LRP-optimal thresholds #### \n'
+                    s = self.eval['lrp_opt_thr'][:, aind, mind].squeeze(axis=1)
+                    titleStr = '# Class-specific LRP-Optimal Thresholds # \n'
                     typeStr = '    '
-                    # Floor by using 3 decimal digits            
+                    # Floor by using 3 decimal digits
                     print(titleStr, np.round(s - 0.5 * 10**(-3), 3))
-                    return s 
-            idx = (~np.isnan(s))  
+                    return s
+            idx = (~np.isnan(s))
             s = s[idx]
             if len(s[s > -1]) == 0:
                 mean_s = -1
@@ -590,7 +583,7 @@ class COCOeval:
             return mean_s
 
         def _summarizeDets():
-            stats = np.zeros((17, ))
+            stats = np.zeros((16, ))
             stats[0] = _summarize(1)
             stats[1] = _summarize(1, iouThr=.5, maxDets=self.params.maxDets[2])
             stats[2] = _summarize(1,
@@ -637,9 +630,11 @@ class COCOeval:
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_false_negative')
-            _summarize(-1, iouThr=.5, areaRng='all',
-                        maxDets=self.params.maxDets[2],
-                        lrp_type='oLRP_thresholds')
+            _summarize(-1,
+                       iouThr=.5,
+                       areaRng='all',
+                       maxDets=self.params.maxDets[2],
+                       lrp_type='oLRP_thresholds')
             return stats
 
         def _summarizeKps():
@@ -674,8 +669,11 @@ class COCOeval:
                                    iouThr=.5,
                                    areaRng='all',
                                    lrp_type='oLRP_false_negative')
-            _summarize(-1, iouThr=.5, areaRng='all',
-                        maxDets=20, lrp_type='oLRP_thresholds')
+            _summarize(-1,
+                       iouThr=.5,
+                       areaRng='all',
+                       maxDets=20,
+                       lrp_type='oLRP_thresholds')
             return stats
 
         if not self.eval:
@@ -708,10 +706,6 @@ class Params:
                                    1.00,
                                    int(np.round((1.00 - .0) / .01)) + 1,
                                    endpoint=True)
-        self.scoreThrs = np.linspace(.0,
-                                     1.00,
-                                     int(np.round((1.00 - .0) / .01)) + 1,
-                                     endpoint=True)
         self.maxDets = [1, 10, 100]
         self.areaRng = [[0**2, 1e5**2], [0**2, 32**2], [32**2, 96**2],
                         [96**2, 1e5**2]]
@@ -731,10 +725,6 @@ class Params:
                                    1.00,
                                    int(np.round((1.00 - .0) / .01)) + 1,
                                    endpoint=True)
-        self.scoreThrs = np.linspace(.0,
-                                     1.00,
-                                     int(np.round((1.00 - .0) / .01)) + 1,
-                                     endpoint=True)
         self.maxDets = [20]
         self.areaRng = [[0**2, 1e5**2], [32**2, 96**2], [96**2, 1e5**2]]
         self.areaRngLbl = ['all', 'medium', 'large']

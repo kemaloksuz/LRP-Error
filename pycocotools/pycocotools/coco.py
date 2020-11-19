@@ -8,8 +8,8 @@ __version__ = '2.0'
 # Please visit http://mscoco.org/ for more information on COCO, including
 # for the data, paper, and tutorials. The exact format of the annotations
 # is also described on the COCO website. For example usage of the pycocotools
-# please see pycocotools_demo.ipynb. In addition to this API, please download
-# both the COCO images and annotations in order to run the demo.
+# please see pycocotools_demo.ipynb. In addition to this API, please
+# download both the COCO images and annotations in order to run the demo.
 
 # An alternative to using the API is to load the annotations directly
 # into Python dictionary
@@ -18,8 +18,8 @@ __version__ = '2.0'
 # captions not all functions are defined (e.g. categories are undefined).
 
 # The following API functions are defined:
-#  COCO       - COCO api class that loads COCO annotation file and prepare data
-#               structures.
+#  COCO       - COCO api class that loads COCO annotation file
+#               and prepare data structures.
 #  decodeMask - Decode binary mask M encoded via run-length encoding.
 #  encodeMask - Encode binary mask M using run-length encoding.
 #  getAnnIds  - Get ann ids that satisfy given filter conditions.
@@ -49,9 +49,9 @@ import copy
 import itertools
 import json
 import os
+import sys
 import time
 from collections import defaultdict
-from urllib.request import urlretrieve
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -59,6 +59,12 @@ from matplotlib.collections import PatchCollection
 from matplotlib.patches import Polygon
 
 from . import mask as maskUtils
+
+PYTHON_VERSION = sys.version_info[0]
+if PYTHON_VERSION == 2:
+    from urllib import urlretrieve
+elif PYTHON_VERSION == 3:
+    from urllib.request import urlretrieve
 
 
 def _isArrayLike(obj):
@@ -68,26 +74,24 @@ def _isArrayLike(obj):
 class COCO:
     def __init__(self, annotation_file=None):
         """
-        Constructor of Microsoft COCO helper class for reading and visualizing
-        annotations.
+        Constructor of Microsoft COCO helper class for reading
+        and visualizing annotations.
         :param annotation_file (str): location of annotation file
         :param image_folder (str): location to the folder that hosts images.
         :return:
         """
         # load dataset
-        self.dataset, self.anns, self.cats, self.imgs = dict(), dict(), dict(
-        ), dict()
+        self.dataset, self.anns, self.cats, self.imgs = dict(), dict(),
+        dict(), dict()
         self.imgToAnns, self.catToImgs = defaultdict(list), defaultdict(list)
-        self.img_ann_map = self.imgToAnns
-        self.cat_img_map = self.catToImgs
         if annotation_file is not None:
             print('loading annotations into memory...')
             tic = time.time()
             dataset = json.load(open(annotation_file, 'r'))
-            assert type(
-                dataset
-            ) == dict, 'annotation file format {} not supported'.format(
-                type(dataset))
+            assert isinstance(
+                dataset,
+                dict), 'annotation file format {} not supported'.format(
+                    type(dataset))
             print('Done (t={:0.2f}s)'.format(time.time() - tic))
             self.dataset = dataset
             self.createIndex()
@@ -122,8 +126,6 @@ class COCO:
         self.catToImgs = catToImgs
         self.imgs = imgs
         self.cats = cats
-        self.img_ann_map = self.imgToAnns
-        self.cat_img_map = self.catToImgs
 
     def info(self):
         """
@@ -135,14 +137,14 @@ class COCO:
 
     def getAnnIds(self, imgIds=[], catIds=[], areaRng=[], iscrowd=None):
         """
-        Get ann ids that satisfy given filter conditions. default skips that
-        filter
+        Get ann ids that satisfy given filter conditions.
+        default skips that filter
         :param imgIds  (int array)     : get anns for given imgs
                catIds  (int array)     : get anns for given cats
                areaRng (float array)   : get anns for given area range
-                                        (e.g. [0 inf])
+                                         (e.g. [0 inf])
                iscrowd (boolean)       : get anns for given crowd label
-                                        (False or True)
+                                         (False or True)
         :return: ids (int array)       : integer array of ann ids
         """
         imgIds = imgIds if _isArrayLike(imgIds) else [imgIds]
@@ -172,9 +174,6 @@ class COCO:
             ids = [ann['id'] for ann in anns]
         return ids
 
-    def get_ann_ids(self, img_ids=[], cat_ids=[], area_rng=[], iscrowd=None):
-        return self.getAnnIds(img_ids, cat_ids, area_rng, iscrowd)
-
     def getCatIds(self, catNms=[], supNms=[], catIds=[]):
         """
         filtering parameters. default skips that filter.
@@ -203,9 +202,6 @@ class COCO:
         ids = [cat['id'] for cat in cats]
         return ids
 
-    def get_cat_ids(self, cat_names=[], sup_names=[], cat_ids=[]):
-        return self.getCatIds(cat_names, sup_names, cat_ids)
-
     def getImgIds(self, imgIds=[], catIds=[]):
         '''
         Get img ids that satisfy given filter conditions.
@@ -227,9 +223,6 @@ class COCO:
                     ids &= set(self.catToImgs[catId])
         return list(ids)
 
-    def get_img_ids(self, img_ids=[], cat_ids=[]):
-        return self.getImgIds(img_ids, cat_ids)
-
     def loadAnns(self, ids=[]):
         """
         Load anns with the specified ids.
@@ -238,10 +231,8 @@ class COCO:
         """
         if _isArrayLike(ids):
             return [self.anns[id] for id in ids]
-        elif type(ids) == int:
+        elif isinstance(ids, int):
             return [self.anns[ids]]
-
-    load_anns = loadAnns
 
     def loadCats(self, ids=[]):
         """
@@ -251,10 +242,8 @@ class COCO:
         """
         if _isArrayLike(ids):
             return [self.cats[id] for id in ids]
-        elif type(ids) == int:
+        elif isinstance(ids, int):
             return [self.cats[ids]]
-
-    load_cats = loadCats
 
     def loadImgs(self, ids=[]):
         """
@@ -264,10 +253,8 @@ class COCO:
         """
         if _isArrayLike(ids):
             return [self.imgs[id] for id in ids]
-        elif type(ids) == int:
+        elif isinstance(ids, int):
             return [self.imgs[ids]]
-
-    load_imgs = loadImgs
 
     def showAnns(self, anns, draw_bbox=False):
         """
@@ -291,7 +278,7 @@ class COCO:
             for ann in anns:
                 c = (np.random.random((1, 3)) * 0.6 + 0.4).tolist()[0]
                 if 'segmentation' in ann:
-                    if type(ann['segmentation']) == list:
+                    if isinstance(ann['segmentation'], list):
                         # polygon
                         for seg in ann['segmentation']:
                             poly = np.array(seg).reshape(
@@ -301,7 +288,7 @@ class COCO:
                     else:
                         # mask
                         t = self.imgs[ann['image_id']]
-                        if type(ann['segmentation']['counts']) == list:
+                        if isinstance(ann['segmentation']['counts'], list):
                             rle = maskUtils.frPyObjects([ann['segmentation']],
                                                         t['height'],
                                                         t['width'])
@@ -316,7 +303,7 @@ class COCO:
                         for i in range(3):
                             img[:, :, i] = color_mask[i]
                         ax.imshow(np.dstack((img, m * 0.5)))
-                if 'keypoints' in ann and type(ann['keypoints']) == list:
+                if 'keypoints' in ann and isinstance(ann['keypoints'], list):
                     # turn skeleton into zero-based index
                     sks = np.array(
                         self.loadCats(ann['category_id'])[0]['skeleton']) - 1
@@ -376,16 +363,16 @@ class COCO:
 
         print('Loading and preparing results...')
         tic = time.time()
-        if type(resFile) == str:
+        if isinstance(resFile, str):
             anns = json.load(open(resFile))
-        elif type(resFile) == np.ndarray:
+        elif isinstance(resFile, np.ndarray):
             anns = self.loadNumpyAnnotations(resFile)
         else:
             anns = resFile
-        assert type(anns) == list, 'results in not an array of objects'
+        assert isinstance(anns, list), 'results in not an array of objects'
         annsImgIds = [ann['image_id'] for ann in anns]
         assert set(annsImgIds) == (set(annsImgIds) & set(self.getImgIds())), \
-               'Results do not correspond to current coco set'
+            'Results do not correspond to current coco set'
         if 'caption' in anns[0]:
             imgIds = set([img['id'] for img in res.dataset['images']]) & set(
                 [ann['image_id'] for ann in anns])
@@ -461,13 +448,13 @@ class COCO:
 
     def loadNumpyAnnotations(self, data):
         """
-        Convert result data from a numpy array [Nx7] where each row contains
-        {imageID,x1,y1,w,h,score,class}
+        Convert result data from a numpy array [Nx7]
+        where each row contains {imageID,x1,y1,w,h,score,class}
         :param  data (numpy.ndarray)
         :return: annotations (python nested list)
         """
         print('Converting ndarray to lists...')
-        assert (type(data) == np.ndarray)
+        assert (isinstance(data, np.ndarray))
         print(data.shape)
         assert (data.shape[1] == 7)
         N = data.shape[0]
@@ -491,12 +478,12 @@ class COCO:
         t = self.imgs[ann['image_id']]
         h, w = t['height'], t['width']
         segm = ann['segmentation']
-        if type(segm) == list:
+        if isinstance(segm, list):
             # polygon -- a single object might consist of multiple parts
             # we merge all parts into one mask rle code
             rles = maskUtils.frPyObjects(segm, h, w)
             rle = maskUtils.merge(rles)
-        elif type(segm['counts']) == list:
+        elif isinstance(segm['counts'], list):
             # uncompressed RLE
             rle = maskUtils.frPyObjects(segm, h, w)
         else:
@@ -504,16 +491,12 @@ class COCO:
             rle = ann['segmentation']
         return rle
 
-    ann_to_rle = annToRLE
-
     def annToMask(self, ann):
         """
-        Convert annotation which can be polygons, uncompressed RLE, or RLE to
-        binary mask.
+        Convert annotation which can be polygons,
+        uncompressed RLE, or RLE to binary mask.
         :return: binary mask (numpy 2D array)
         """
         rle = self.annToRLE(ann)
         m = maskUtils.decode(rle)
         return m
-
-    ann_to_mask = annToMask
