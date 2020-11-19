@@ -16,26 +16,26 @@ For mmdetection COCO api [3] to evaluate object detection, keypoint detection an
 In a nutshell, LRP Error (previously proposed only for object detection in [4])
 
 - is an alternative to average precision (AP) for object detection, keypoint detection and instance segmentation
-- is an alternative to panoptic quality (PQ) for panoptic segmentation 
-- can be extended to evaluate other visual detection tasks such as 3D object detection etc.
+- is an alternative to panoptic quality (PQ) for panoptic segmentation
+- can be extended to evaluate other visual detection tasks such as 3D object detection 
 - can be used to assign class-wise optimal thresholds for practical needs
 
 ## Benefits of LRP Compared to AP and PQ
 
-In our paper, we first define three important features for a performance measure to evaluate visual object detection tasks, then analyse AP, PQ and LRP based on these features. Finally, again based on these important features, we empirically demonstrate the drawbacks of AP and PQ, and discuss how LRP alleviates these drawbacks.
+In our paper, we first define three important features for a performance measure to evaluate visual object detection tasks; then analyse AP, PQ and LRP based on these features. Finally, again based on these important features, we empirically demonstrate the drawbacks of AP and PQ, and discuss how LRP alleviates their drawbacks.
 
 ### Important features for a performance measure
 
-Three important features for a performance measure to evaluate visual object detection tasks are:
+We identfy three important features for a performance measure to evaluate visual object detection tasks as follows:
 
-- Completeness: We call a performance measure ''complete'' if it precisely  takes into account three most important  performance aspects in a visual detection task, that are false positive (FP) rate, false negative (FN) rate and localisation error.
+- Completeness: We call a performance measure ''complete'' if it precisely  takes into account three most important  performance aspects in a visual detection task, that are false positive rate, false negative rate and localisation error.
 
 - Interpretability: Interpretability of a performance measure is related to its ability to provide insights on the strengths and weaknesses of the detector being evaluated.
 
 - Practicality. Any issue that arises during  practical use of a performance measure diminishes its practicality.
 
 ### Intuition of LRP and Optimal LRP
-LRP Error is defined as  the ''average matching error'', where the ''total matching error'' between ground truth set and detection set is normalised by the ``maximum possible value of the total matching error''. Each true positive (TP) contributes to the total matching error by its normalised localization error, and, each false positive (FP) or false negative (FN) contributes by 1. Since each TP, FP and FN has a maximum error potential of 1, we average the ''total matching error'' by the summation of numbers of TPs, FPs and FNs. As a result, LRP has a range of [0,1].
+LRP Error is defined as  the ''average matching error'', where the ''total matching error'' between ground truth set and detection set is normalised by the ``maximum possible value of the total matching error''. Each true positive (TP) contributes to the total matching error by its normalised localization error, and, each false positive (FP) or false negative (FN) contributes by 1. Since each TP, FP and FN has a maximum error potential of 1, we normalise the ''total matching error'' by the summation of numbers of TPs, FPs and FNs. As a result, LRP has a range of [0,1].
 
 LRP can directly be used to evaluate panoptic segmentation since the conventional output of panoptic segmentation does not contain confidence scores. As for the outputs with confidence scores, such as the ones in object detection, keypoint detection and instance segmentation, we define Optimal LRP (oLRP) as the minimum achievable LRP Error over the confidence scores. Accordingly, oLRP identifies the optimal configuration and the confidence score corresponding to oLRP is the ''LRP-Optimal Threshold''.
 
@@ -51,9 +51,9 @@ Therefore, with oLRP, we replace AP; and with LRP, we replace PQ.
 
 - Interpretability: While AP does not provide any insight on the detection performance, oLRP is interpretable with its components corresponding to performance aspects. (note that Detector 1 and Detector 2 have very different natures, but equal AP. The components of oLRP is able to address this problem.)
 
-- Practicality: We identify three practical issues of AP: (i) AP is not suitable to evaluate outputs without confidence scores (e.g. panoptic segmentation) (ii) AP can not identify a threshold for practical usage of the detectors and (iii) interpolating the PR curve can affect the performance of the classes with low examples.
+- Practicality: We identify three practical issues with AP: (i) AP is not suitable to evaluate outputs without confidence scores (e.g. panoptic segmentation), (ii) AP can not identify a threshold for practical usage of the detectors, and (iii) interpolating the PR curve can affect the performance of the classes with low examples.
 
-Please see our paper for a more comprehensive analysis of AP (including COCO-style AP), and its theoretical and empirical comparisons with LRP..
+Please see our paper for a more comprehensive analysis of AP (including COCO-style AP), and its theoretical and empirical comparisons with LRP.
 
 #### Comparison of LRP with PQ
 
@@ -61,7 +61,7 @@ Please see our paper for a more comprehensive analysis of AP (including COCO-sty
 
 - Interpretability: RQ component of PQ combines precision and recall, while LRP has a corresponding component for each performance aspect, and hence provides better interpretability.
 
-- Practicality: We identify two practical issues of LRP: (i) PQ is limited to panoptic segmentation (ii) PQ overpromotes classification error compared to localisation error inconsistently.
+- Practicality: We identify two practical issues of LRP: (i) PQ is limited to panoptic segmentation, and (ii) PQ overpromotes classification error compared to localisation error inconsistently.
 
 Please see our paper for a more comprehensive analysis of PQ, and its theoretical and empirical comparisons with LRP.
 
@@ -86,7 +86,7 @@ In this repo, we merge using LRP on different tasks and datasets into one repo. 
 ```shell
 # Install cocoapi
 pip install "git+https://github.com/open-mmlab/cocoapi.git#subdirectory=pycocotools"
-# Install lvis-api
+# Install panopticapi
 pip install "git+https://github.com/open-mmlab/cocoapi.git#subdirectory=panopticapi"
 ```
 
