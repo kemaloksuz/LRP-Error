@@ -2,8 +2,8 @@
 
 The official implementation of LRP Error. This repository contains the implementation of LRP Error on following evaluation apis:
 
-- Official COCO api [1] to evaluate object detection, keypoint detection and instance segmentation (pycocotools folder)
-- Official COCO panoptic api [2] to evaluate panoptic segmentation (panopticapi folder)
+- Official COCO api [1] to evaluate object detection, keypoint detection and instance segmentation 
+- Official COCO panoptic api [2] to evaluate panoptic segmentation 
 
 > [**One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks**](https://arxiv.org/abs/2009.13592),
 > [Kemal Oksuz](https://kemaloksuz.github.io/), Baris Can Cam, , [Sinan Kalkan](http://www.kovan.ceng.metu.edu.tr/~sinan/), [Emre Akbas](http://user.ceng.metu.edu.tr/~emre/),
@@ -61,7 +61,7 @@ Please see our paper for a more comprehensive analysis of AP (including COCO-sty
 
 - Interpretability: RQ component of PQ combines precision and recall, while LRP has a corresponding component for each performance aspect, and hence provides better interpretability.
 
-- Practicality: We identify two practical issues of LRP: (i) PQ is limited to panoptic segmentation, and (ii) PQ overpromotes classification error compared to localisation error inconsistently.
+- Practicality: We identify two practical issues of PQ: (i) PQ is limited to panoptic segmentation, and (ii) PQ overpromotes classification error compared to localisation error inconsistently.
 
 Please see our paper for a more comprehensive analysis of PQ, and its theoretical and empirical comparisons with LRP.
 
