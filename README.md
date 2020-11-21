@@ -93,9 +93,9 @@ In this repo, we merge using LRP on different tasks and datasets into one repo. 
 
 ```shell
 # Install cocoapi
-pip install "git+https://github.com/open-mmlab/cocoapi.git#subdirectory=pycocotools"
+pip install "git+https://github.com/kemaloksuz/LRP-Error.git#subdirectory=pycocotools"
 # Install panopticapi
-pip install "git+https://github.com/open-mmlab/cocoapi.git#subdirectory=panopticapi"
+pip install "git+https://github.com/kemaloksuz/LRP-Error.git#subdirectory=panopticapi"
 ```
 
 ## Using Demo Files (Coming Soon)
