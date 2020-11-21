@@ -85,7 +85,12 @@ Please see our paper for a more comprehensive analysis of AP (including COCO-sty
 
 Please see our paper for a more comprehensive analysis of PQ, and its theoretical and empirical comparisons with LRP.
 
-## Specification of Dependencies and Preparation (Coming Soon)
+## Specification of Dependencies
+
+- setuptools>=18.0
+- cython>=0.27.3 
+- matplotlib>=2.1.0
+- python3
 
 ## Installation
 
@@ -107,8 +112,9 @@ We evaluate the models from the three common repositories: mmdetection [5], dete
 
 ### Evaluated Object Detection Models
 
-|   Model  Name   |  Link to Source Repo    | AP  | AP_{50} | AP_{75} | AR  | oLRP  | oLRP_{Loc} | oLRP_{FP} | oLRP_{FN}  | Model  | Result File  |
-| :-------------:  | :-----: | :------------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |:-------: | :-------: |
+|   Config  Name   |  Link to Source Repo | Detections | Results | oLRP | oLRP_{Loc} | oLRP_{FP} | oLRP_{FN} | AP^{C} | AP_{50} | AP_{75} | AR_{100}^{C}|
+| :-------------: | :-----------: | :-------------: | :-----------:| :------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |
+| ssd300_coco.py | [mmdetection ssd](https://github.com/open-mmlab/mmdetection/tree/master/configs/ssd) | [json](https://github.com/open-mmlab/mmdetection/tree/master/configs/ssd) | [LRP result](https://github.com/open-mmlab/mmdetection/tree/master/configs/ssd) | 78.4 | 20.6 | 37.1 | 57.9 | 25.6 | 43.8 | 26.3 | 37.5 |
 
 ### Evaluated Keypoint Detection Models 
 
