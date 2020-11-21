@@ -1,6 +1,6 @@
 # One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks
 
-The official implementation of LRP Error. This repository contains the implementation of LRP Error on following evaluation apis:
+The official implementation of LRP Error. This repository provides the implementation of LRP Error on the following evaluation apis:
 
 - Official COCO api [1] to evaluate object detection, keypoint detection and instance segmentation 
 - Official COCO panoptic api [2] to evaluate panoptic segmentation 
@@ -10,60 +10,6 @@ The official implementation of LRP Error. This repository contains the implement
 > ([arXiv pre-print](https://arxiv.org/abs/2009.13592))*
 
 For mmdetection COCO api [3] to evaluate object detection, keypoint detection and instance segmentation [see this repository](https://github.com/kemaloksuz/cocoapi).
-
-## Summary
-
-In a nutshell, LRP Error (previously proposed only for object detection in [4])
-
-- is an alternative to average precision (AP) for object detection, keypoint detection and instance segmentation
-- is an alternative to panoptic quality (PQ) for panoptic segmentation
-- can be extended to evaluate other visual detection tasks such as 3D object detection 
-- can be used to assign class-wise optimal thresholds for practical needs
-
-## Benefits of LRP Compared to AP and PQ
-
-In our paper, we first define three important features for a performance measure to evaluate visual object detection tasks; then analyse AP, PQ and LRP based on these features. Finally, again based on these important features, we empirically demonstrate the drawbacks of AP and PQ, and discuss how LRP alleviates their drawbacks.
-
-### Important features for a performance measure
-
-We identfy three important features for a performance measure to evaluate visual object detection tasks as follows:
-
-- Completeness: We call a performance measure ''complete'' if it precisely  takes into account three most important  performance aspects in a visual detection task, that are false positive rate, false negative rate and localisation error.
-
-- Interpretability: Interpretability of a performance measure is related to its ability to provide insights on the strengths and weaknesses of the detector being evaluated.
-
-- Practicality. Any issue that arises during  practical use of a performance measure diminishes its practicality.
-
-### Intuition of LRP and Optimal LRP
-LRP Error is defined as  the ''average matching error'', where the ''total matching error'' between ground truth set and detection set is normalised by the ``maximum possible value of the total matching error''. Each true positive (TP) contributes to the total matching error by its normalised localization error, and, each false positive (FP) or false negative (FN) contributes by 1. Since each TP, FP and FN has a maximum error potential of 1, we normalise the ''total matching error'' by the summation of numbers of TPs, FPs and FNs. As a result, LRP has a range of [0,1].
-
-LRP can directly be used to evaluate panoptic segmentation since the conventional output of panoptic segmentation does not contain confidence scores. As for the outputs with confidence scores, such as the ones in object detection, keypoint detection and instance segmentation, we define Optimal LRP (oLRP) as the minimum achievable LRP Error over the confidence scores. Accordingly, oLRP identifies the optimal configuration and the confidence score corresponding to oLRP is the ''LRP-Optimal Threshold''.
-
-Therefore, with oLRP, we replace AP; and with LRP, we replace PQ.
-
-### Comparison of LRP with AP and PQ
-
-#### Comparison of oLRP with AP
-
-![LRP Toy Example](assets/Teaser.png)
-
-- Completeness: While AP considers localisation performance loosely, only to validate TPs; oLRP takes into account localisation error of a TP precisely (compare the results Detector 1 and Detector 3 in the figure).
-
-- Interpretability: While AP does not provide any insight on the detection performance, oLRP is interpretable with its components corresponding to performance aspects. (note that Detector 1 and Detector 2 have very different natures, but equal AP. The components of oLRP is able to address this problem.)
-
-- Practicality: We identify three practical issues with AP: (i) AP is not suitable to evaluate outputs without confidence scores (e.g. panoptic segmentation), (ii) AP can not identify a threshold for practical usage of the detectors, and (iii) interpolating the PR curve can affect the performance of the classes with low examples.
-
-Please see our paper for a more comprehensive analysis of AP (including COCO-style AP), and its theoretical and empirical comparisons with LRP.
-
-#### Comparison of LRP with PQ
-
-- Completeness: Both measures are complete.
-
-- Interpretability: RQ component of PQ combines precision and recall, while LRP has a corresponding component for each performance aspect, and hence provides better interpretability.
-
-- Practicality: We identify two practical issues of PQ: (i) PQ is limited to panoptic segmentation, and (ii) PQ overpromotes classification error compared to localisation error inconsistently.
-
-Please see our paper for a more comprehensive analysis of PQ, and its theoretical and empirical comparisons with LRP.
 
 ## How to Cite
 
@@ -77,6 +23,68 @@ Please cite the paper if you benefit from our paper or repository:
 }
 ```
 
+## Contribution to the Repository
+
+Any contribution to the repository is appreciated. In addition to the datasets and tasks we provide, if you implement LRP Error to evaluate the results of different datasets or different tasks, please follow the subdirectory-based structure of the repository and then make a pull request. Feel free to contact for any question.
+
+## Summary 
+
+In a nutshell, LRP Error (previously proposed only for object detection in [4])
+
+- is an alternative to Average Precision (AP) for object detection, keypoint detection and instance segmentation
+- is an alternative to Panoptic Quality (PQ) for panoptic segmentation
+- can be extended to evaluate other visual detection tasks such as 3D object detection 
+- can be used to assign class-wise optimal thresholds for practical needs
+
+## A Brief Overview of the Paper
+
+In our paper, we first define three important features for a performance measure to evaluate visual object detection tasks; then analyse AP, PQ and LRP based on these features. Finally, again based on these important features, we empirically demonstrate the drawbacks of AP and PQ, and discuss how LRP alleviates their drawbacks.
+
+### Important features for a performance measure
+
+We identfy three important features for a performance measure to evaluate visual object detection tasks as follows:
+
+- **Completeness:** We call a performance measure ''complete'' if it *precisely*  takes into account three most important  performance aspects in a visual detection task, that are false positive rate, false negative rate and localisation error.
+
+- **Interpretability:** Interpretability of a performance measure is related to its ability to provide insights on the strengths and weaknesses of the detector being evaluated.
+
+- **Practicality:** Any issue that arises during  practical use of a performance measure diminishes its practicality.
+
+### Intuition of LRP and Optimal LRP
+
+LRP Error is defined as  the ''average matching error'', where the ''total matching error'' between ground truth set and detection set is normalised by the ''maximum possible value of the total matching error'':
+- Total Matching Error: The summation of errors from true positives (TP), false positives (FP) and false negatives (FN). Each TP contributes by its normalised localization error, and, each FP or FN contributes by 1. 
+- Maximum Possible Value of the Total Matching Error: Since each TP, FP and FN has a maximum error potential of 1, the maximum possible valur of the total matching error is simply the summation of numbers of TPs, FPs and FNs. 
+- Dividing Total Matching Error by Maximum Possible Value of the Total Matching Error yields LRP, and consequently LRP has a range of [0,1].
+
+LRP can directly be used to evaluate panoptic segmentation since the conventional output of panoptic segmentation does not contain confidence scores. As for the outputs with confidence scores (e.g. the outputs of object detection, keypoint detection and instance segmentation), we define Optimal LRP (oLRP) as the minimum achievable LRP Error over the confidence scores. Accordingly, oLRP identifies the optimal configuration and the confidence score corresponding to oLRP is the ''LRP-Optimal Threshold''.
+
+Therefore, LRP replaces PQ and oLRP replaces AP.
+
+### Comparison of LRP with AP and PQ
+
+#### Comparison of oLRP with AP
+
+![LRP Toy Example](assets/Teaser.png)
+
+- **Completeness:** While AP considers localisation quality of TPs *loosely* (i.e. only to validate TPs, thus not *precisely*); oLRP takes into account their localisation qualities precisely (compare the results Detector 1 and Detector 3 in the figure).
+
+- **Interpretability:** While AP does not provide any insight on the detection performance, oLRP is interpretable with its components corresponding to performance aspects. (note that Detector 1 and Detector 2 have very different problems, but equal AP. The components of oLRP is able to address this problem.)
+
+- **Practicality:** We identify three practical issues with AP: (i) AP is not suitable to evaluate outputs without confidence scores (e.g. panoptic segmentation), (ii) AP can not identify a threshold for practical usage of the detectors, and (iii) interpolating the PR curve can affect the performance of the classes with low number of examples.
+
+Please see our paper for a more comprehensive analysis of AP (including COCO-style AP), and its theoretical and empirical comparisons with LRP.
+
+#### Comparison of LRP with PQ
+
+- **Completeness:** Both measures are complete.
+
+- **Interpretability:** RQ component of PQ, defined as the F-measure, combines precision and recall (i.e. does not isolate errors); while LRP has a corresponding component for each performance aspect, and hence provides better interpretability.
+
+- **Practicality:** We identify two issues of PQ related to practicality: (i) PQ is limited to panoptic segmentation, and (ii) PQ overpromotes classification error compared to localisation error inconsistently.
+
+Please see our paper for a more comprehensive analysis of PQ, and its theoretical and empirical comparisons with LRP.
+
 ## Specification of Dependencies and Preparation (Coming Soon)
 
 ## Installation
@@ -85,9 +93,9 @@ In this repo, we merge using LRP on different tasks and datasets into one repo. 
 
 ```shell
 # Install cocoapi
-pip install "git+https://github.com/open-mmlab/cocoapi.git#subdirectory=pycocotools"
+pip install "git+https://github.com/kemaloksuz/LRP-Error.git#subdirectory=pycocotools"
 # Install panopticapi
-pip install "git+https://github.com/open-mmlab/cocoapi.git#subdirectory=panopticapi"
+pip install "git+https://github.com/kemaloksuz/LRP-Error.git#subdirectory=panopticapi"
 ```
 
 ## Using Demo Files (Coming Soon)
@@ -99,23 +107,23 @@ We evaluate the models from the three common repositories: mmdetection [5], dete
 
 ### Evaluated Object Detection Models
 
-|    Model  Name   |  Source Repo    | AP  | $AP_{50}$ | $AP_{75}$ | $AR$  | oLRP  | $oLRP_{Loc}$ | $oLRP_{FP}$ | $oLRP_{FN}$  | model  |
-| :-------------:  | :-----: | :------------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |:-------: |
+|   Model  Name   |  Link to Source Repo    | AP  | AP_{50} | AP_{75} | AR  | oLRP  | oLRP_{Loc} | oLRP_{FP} | oLRP_{FN}  | Model  | Result File  |
+| :-------------:  | :-----: | :------------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |:-------: | :-------: |
 
 ### Evaluated Keypoint Detection Models 
 
-|    Model  Name   |  Source Repo    | AP  | $AP_{50}$ | $AP_{75}$ | $AR$  | oLRP  | $oLRP_{Loc}$ | $oLRP_{FP}$ | $oLRP_{FN}$  | model  |
-| :-------------:  | :-----: | :------------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |:-------: |
+|   Model  Name   |  Link to Source Repo    | AP  | AP_{50} | AP_{75} | AR  | oLRP  | oLRP_{Loc} | oLRP_{FP} | oLRP_{FN}  | Model  | Result File  |
+| :-------------:  | :-----: | :------------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |:-------: | :-------: |
 
 ### Evaluated Instance Segmentation Models 
 
-|    Model  Name   |  Source Repo    | AP  | $AP_{50}$ | $AP_{75}$ | $AR$  | oLRP  | $oLRP_{Loc}$ | $oLRP_{FP}$ | $oLRP_{FN}$  | model  |
-| :-------------:  | :-----: | :------------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |:-------: |
+|   Model  Name   |  Link to Source Repo    | AP  | AP_{50} | AP_{75} | AR  | oLRP  | oLRP_{Loc} | oLRP_{FP} | oLRP_{FN}  | Model  | Result File  |
+| :-------------:  | :-----: | :------------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |:-------: | :-------: |
 
 ### Evaluated Panoptic Segmentation Models 
 
-|    Model  Name   |  Source Repo    | PQ  | SQ | RQ | LRP  | LRP_{Loc} | LRP_{FP} | LRP_{FN}  | model  |
-| :-------------:  | :-----: | :------------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |
+|    Model  Name   |  Link to Source Repo    | PQ  | SQ | RQ | LRP  | LRP_{Loc} | LRP_{FP} | LRP_{FN}  | Model  |   Result File  |
+| :-------------:  | :-----: | :------------: | :------------: | :----: | :-------: |:-------: |:------------: | :----: | :-------: |:-------: |
 
 
 ## License
