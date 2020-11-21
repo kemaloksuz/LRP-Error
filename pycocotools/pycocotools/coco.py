@@ -81,8 +81,8 @@ class COCO:
         :return:
         """
         # load dataset
-        self.dataset, self.anns, self.cats, self.imgs = dict(), dict(),
-        dict(), dict()
+        self.dataset, self.anns, self.cats, self.imgs = dict(), dict(), dict(
+        ), dict()
         self.imgToAnns, self.catToImgs = defaultdict(list), defaultdict(list)
         if annotation_file is not None:
             print('loading annotations into memory...')
