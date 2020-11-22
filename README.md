@@ -135,7 +135,7 @@ Please see [instance_segmentation.md](result_tables/instance_segmentation.md)
 
 ### Evaluated Panoptic Segmentation Models 
 
-Please check [panoptic_segmentation.md](result_tables/panoptic_segmentation.md)
+Please see [panoptic_segmentation.md](result_tables/panoptic_segmentation.md)
 
 ## License
 This project is released under the [Apache 2.0 license](LICENSE).
