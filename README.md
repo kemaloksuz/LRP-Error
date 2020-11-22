@@ -103,24 +103,35 @@ pip install "git+https://github.com/kemaloksuz/LRP-Error.git#subdirectory=pycoco
 pip install "git+https://github.com/kemaloksuz/LRP-Error.git#subdirectory=panopticapi"
 ```
 
-## Using Demo Files (Coming Soon)
-For each dataset to use LRP, we provide demo files to facilitate the usage of this repository. Clear explanations will follow.
+## Using Demo Files
+To facilitate the usage of LRP on each supported evaluation api, we provide a demo file:
 
-## Evaluated Models (Coming Soon)
+- Official COCO api: Please follow the instructions [in this file](pycocotools/demo.py) to reproduce an example evaluation with LRP.
+- Official COCO panopticapi: (Coming Soon)
+
+## Evaluated Models
 
 We evaluate the models from the three common repositories: mmdetection [5], detectron [6], detectron [7], and our aLRP Loss implementation [8, 9].
 
+For each of the task a separate file is allocated, and each of these files presents the results in the following form:
+
+|   Method   | Backbone | Epoch | Link to Config |  Model | Detections | LRP Results | oLRP | oLRP<sub>Loc</sub> | oLRP<sub>FP</sub> | oLRP<sub>FN</sub> | AP<sup>C</sup> | AP<sub>50</sub> | AP<sub>75</sub> | AR<sup>C</sup><sub>100</sub>|
+| :---------------------------: | :-------: | :-----: | :------------: | :------: | :-----:| :----------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
+| SSD-300 | VGG-16 | 120 | [mmdetection](https://github.com/open-mmlab/mmdetection/blob/master/configs/ssd/ssd300_coco.py) | [model](https://drive.google.com/file/d/1pASqIfWRAJICBGW2MPwVW3C8pquA-pqV/view?usp=sharing) | [json](https://drive.google.com/file/d/1vt0Gn5El4st31_CUJqq_Gaf1VlLdqpan/view?usp=sharing) |[txt](https://drive.google.com/file/d/1kfXbmKPyoLvtBpFJKPGeIWMGphdYMoWC/view?usp=sharing)| 78.4 | 20.6 | 37.1 | 57.9 | 25.6 | 43.8 | 26.3 | 37.5 |
+
+Following the same structure, you can also make a pull request to include your results in the corresponding table.
+
 ### Evaluated Object Detection Models
 
-Please check [object_detection.md](result_tables/object_detection.md)
+Please see [object_detection.md](result_tables/object_detection.md)
 
 ### Evaluated Keypoint Detection Models 
 
-Please check [keypoint_detection.md](result_tables/keypoint_detection.md)
+Please see [keypoint_detection.md](result_tables/keypoint_detection.md)
 
 ### Evaluated Instance Segmentation Models 
 
-Please check [instance_segmentation.md](result_tables/instance_segmentation.md)
+Please see [instance_segmentation.md](result_tables/instance_segmentation.md)
 
 ### Evaluated Panoptic Segmentation Models 
 
