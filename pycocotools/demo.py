@@ -1,8 +1,9 @@
 import pylab
-from pycocotool.coco import COCO
-from pycocotool.cocoeval import COCOeval
+from pycocotools.coco import COCO
+from pycocotools.cocoeval import COCOeval
 
-pylab.rcParams['figure.figsize'] = (10.0, 8.0)
+# This file presents an evaluation example given a detection file in
+# json formatted following COCO sytle output.
 
 # Specify result file. It can be a result file from an object detector,
 # keypoint detector of an instance segmentation method.
@@ -19,12 +20,12 @@ resFile = '../results/faster_rcnn_R_50.json'
 # initialize COCO detections api
 annType = ['segm', 'bbox', 'keypoints']
 
-# #specify type here
+# #specify the type here, e.g for object detection use 1
 annType = annType[1]
 prefix = 'person_keypoints' if annType == 'keypoints' else 'instances'
 print('Running demo for *%s* results.' % (annType))
 
-# initialize COCO ground truth api
+# initialize COCO ground truth api, set the path of accordingly
 dataDir = '../'
 dataType = 'val2017'
 annFile = '%s/annotations/%s_%s.json' % (dataDir, prefix, dataType)
