@@ -12,7 +12,7 @@ from pycocotools.cocoeval import COCOeval
 
 # Uncomment for an object detection example
 # We provide this json file in our example in Readme.md
-# Please download ssd300_coco.bbox.json from the table 
+# Please download ssd300_coco.bbox.json from the table
 # and place it in the same folder with this script
 resFile = 'ssd300_coco.bbox.json'
 
