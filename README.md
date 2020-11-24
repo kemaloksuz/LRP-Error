@@ -5,9 +5,9 @@ The official implementation of LRP Error. This repository provides the implement
 - Official COCO api [1] to evaluate object detection, keypoint detection and instance segmentation 
 - Official COCO panoptic api [2] to evaluate panoptic segmentation 
 
-> [**One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks**](https://arxiv.org/abs/2009.13592),
+> [**One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks**](https://arxiv.org/abs/2011.10772),
 > [Kemal Oksuz](https://kemaloksuz.github.io/), Baris Can Cam, , [Sinan Kalkan](http://www.kovan.ceng.metu.edu.tr/~sinan/), [Emre Akbas](http://user.ceng.metu.edu.tr/~emre/),
-> ([arXiv pre-print](https://arxiv.org/abs/2009.13592))*
+> ([arXiv pre-print](https://arxiv.org/abs/2011.10772))
 
 For mmdetection COCO api [3] to evaluate object detection, keypoint detection and instance segmentation [see this repository](https://github.com/kemaloksuz/cocoapi).
 
@@ -109,7 +109,7 @@ To facilitate the usage of LRP on each supported evaluation api, we provide a de
 - Official COCO api: Please follow the instructions [in this file](pycocotools/demo.py) to reproduce an example evaluation with LRP.
 - Official COCO panopticapi: (Coming Soon)
 
-## Evaluated Models
+## Evaluated Visual Detection Tasks
 
 We evaluate the models from the three common repositories: mmdetection [5], detectron [6], detectron [7], and our aLRP Loss implementation [8, 9].
 
