@@ -5,9 +5,9 @@ The official implementation of LRP Error. This repository provides the implement
 - Official COCO api [1] to evaluate object detection, keypoint detection and instance segmentation 
 - Official COCO panoptic api [2] to evaluate panoptic segmentation 
 
-> [**One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks**](https://arxiv.org/abs/2009.13592),
+> [**One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks**](https://arxiv.org/abs/2011.10772),
 > [Kemal Oksuz](https://kemaloksuz.github.io/), Baris Can Cam, , [Sinan Kalkan](http://www.kovan.ceng.metu.edu.tr/~sinan/), [Emre Akbas](http://user.ceng.metu.edu.tr/~emre/),
-> ([arXiv pre-print](https://arxiv.org/abs/2009.13592))*
+> ([arXiv pre-print](https://arxiv.org/abs/2011.10772))
 
 For mmdetection COCO api [3] to evaluate object detection, keypoint detection and instance segmentation [see this repository](https://github.com/kemaloksuz/cocoapi).
 
@@ -42,7 +42,7 @@ In our paper, we first define three important features for a performance measure
 
 ### Important features for a performance measure
 
-We identfy three important features for a performance measure to evaluate visual object detection tasks as follows:
+We identify three important features for a performance measure to evaluate visual object detection tasks as follows:
 
 - **Completeness:** We call a performance measure ''complete'' if it *precisely*  takes into account three most important  performance aspects in a visual detection task, that are false positive rate, false negative rate and localisation error.
 
@@ -135,6 +135,10 @@ Some example LRP results of the models for object detection task:
 | aLRP Loss | X101 | 100 | 62.5 | 15.1 | 23.2 | 39.5 | 45.4 | 66.6 | 48.0 |
 
 Please see [object_detection.md](result_tables/object_detection.md) for more and detailed results.
+
+|   Method   | Backbone | Epoch | oLRP | oLRP<sub>Loc</sub> | oLRP<sub>FP</sub> | oLRP<sub>FN</sub> | AP<sup>C</sup> | AP<sub>50</sub> | AP<sub>75</sub> | AR<sup>C</sup><sub>100</sub>|
+| :---------------------------: | :-------: | :-----: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
+| ATSS | R50 | 12 | 68.6 | 15.4 | 30.3 | 46.6 | 39.4 | 57.6 | 42.8 | 58.3 |
 
 ### Evaluated Keypoint Detection Models 
 
