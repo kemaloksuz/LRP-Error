@@ -42,7 +42,7 @@ In our paper, we first define three important features for a performance measure
 
 ### Important features for a performance measure
 
-We identfy three important features for a performance measure to evaluate visual object detection tasks as follows:
+We identify three important features for a performance measure to evaluate visual object detection tasks as follows:
 
 - **Completeness:** We call a performance measure ''complete'' if it *precisely*  takes into account three most important  performance aspects in a visual detection task, that are false positive rate, false negative rate and localisation error.
 
@@ -124,6 +124,10 @@ Following the same structure, you can also make a pull request to include your r
 ### Evaluated Object Detection Models
 
 Please see [object_detection.md](result_tables/object_detection.md)
+
+|   Method   | Backbone | Epoch | oLRP | oLRP<sub>Loc</sub> | oLRP<sub>FP</sub> | oLRP<sub>FN</sub> | AP<sup>C</sup> | AP<sub>50</sub> | AP<sub>75</sub> | AR<sup>C</sup><sub>100</sub>|
+| :---------------------------: | :-------: | :-----: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
+| ATSS | R50 | 12 | 68.6 | 15.4 | 30.3 | 46.6 | 39.4 | 57.6 | 42.8 | 58.3 |
 
 ### Evaluated Keypoint Detection Models 
 
