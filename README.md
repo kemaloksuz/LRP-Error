@@ -164,7 +164,7 @@ Please see [instance_segmentation.md](result_tables/instance_segmentation.md) fo
 Some example LRP results of the models for panoptic segmentation task:
 
 |   Method   | Backbone | Epoch | LRP↓ | LRP<sub>Loc</sub>↓ | LRP<sub>FP</sub>↓ | LRP<sub>FN</sub>↓ | PQ↑ | SQ↑ | RQ↑ |
-| :---------------------------: | :-------: | :-----: | :--------: | :--------: | :--------: | :--------: | :--------: | :--------: |
+| :---------------------------: | :-------: | :-----: | :--------: | :--------: | :--------: | :--------: | :--------: | :--------: | :--------: |
 | Panoptic FPN | R50 | 12 | 77.5 | 22.2 | 40.2 | 57.2 | 39.4 | 77.8 | 48.3 |
 | Panoptic FPN | R101 | 37 | 75.9 | 20.3 | 38.6 | 55.2 | 41.5 | 79.1 | 50.5 |
 | Panoptic FPN | R101 | 37 | 74.6 | 19.4 | 37.0 | 53.6 | 43.0 | 80.0 | 52.1 |
