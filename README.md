@@ -4,7 +4,7 @@ The official implementation of LRP Error. This repository provides the implement
 
 - Official COCO api [1] to evaluate object detection, keypoint detection and instance segmentation 
 - Official COCO panoptic api [2] to evaluate panoptic segmentation 
-- Official LVIS api [3] to evaluate panoptic segmentation 
+- Official LVIS api [3] to evaluate instance segmentation 
 
 > [**One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks**](https://arxiv.org/abs/2011.10772),
 > [Kemal Oksuz](https://kemaloksuz.github.io/), Baris Can Cam, , [Sinan Kalkan](http://www.kovan.ceng.metu.edu.tr/~sinan/), [Emre Akbas](http://user.ceng.metu.edu.tr/~emre/),
