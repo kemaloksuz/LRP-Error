@@ -141,10 +141,6 @@ Some example LRP results of the models for object detection task:
 
 Please see [object_detection.md](result_tables/object_detection.md) for more and detailed results.
 
-|   Method   | Backbone | Epoch | oLRP | oLRP<sub>Loc</sub> | oLRP<sub>FP</sub> | oLRP<sub>FN</sub> | AP<sup>C</sup> | AP<sub>50</sub> | AP<sub>75</sub> | AR<sup>C</sup><sub>100</sub>|
-| :---------------------------: | :-------: | :-----: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
-| ATSS | R50 | 12 | 68.6 | 15.4 | 30.3 | 46.6 | 39.4 | 57.6 | 42.8 | 58.3 |
-
 ### Evaluated Keypoint Detection Models 
 
 Some example LRP results of the models for keypoint detection task:
