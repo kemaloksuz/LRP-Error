@@ -7,8 +7,8 @@ images and annotations from the LVIS website.
 """
 
 import json
-import os
 import logging
+import os
 from collections import defaultdict
 from urllib.request import urlretrieve
 
@@ -26,9 +26,10 @@ class LVIS:
 
         self.dataset = self._load_json(annotation_path)
 
-        assert (
-            type(self.dataset) == dict
-        ), "Annotation file format {} not supported.".format(type(self.dataset))
+        assert (isinstance(
+            self.dataset,
+            dict)), "Annotation file format {} not supported.".format(
+                type(self.dataset))
         self._create_index()
 
     def _load_json(self, path):
@@ -66,7 +67,8 @@ class LVIS:
         Args:
             img_ids (int array): get anns for given imgs
             cat_ids (int array): get anns for given cats
-            area_rng (float array): get anns for a given area range. e.g [0, inf]
+            area_rng (float array): get anns
+                for a given area range. e.g [0, inf]
 
         Returns:
             ids (int array): integer array of ann ids
@@ -88,11 +90,8 @@ class LVIS:
             area_rng = [0, float("inf")]
 
         ann_ids = [
-            _ann["id"]
-            for _ann in anns
-            if _ann["category_id"] in cat_ids
-            and _ann["area"] > area_rng[0]
-            and _ann["area"] < area_rng[1]
+            _ann["id"] for _ann in anns if _ann["category_id"] in cat_ids
+            and _ann["area"] > area_rng[0] and _ann["area"] < area_rng[1]
         ]
         return ann_ids
 

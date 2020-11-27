@@ -1,26 +1,25 @@
-import cv2
 import logging
 import os
 
-import numpy as np
+import cv2
 import matplotlib.pyplot as plt
-import pycocotools.mask as mask_utils
-from matplotlib.patches import Polygon
-
+import numpy as np
+from lvis.colormap import colormap
 from lvis.lvis import LVIS
 from lvis.results import LVISResults
-from lvis.colormap import colormap
+from matplotlib.patches import Polygon
 
 
 class LVISVis:
     def __init__(self, lvis_gt, lvis_dt=None, img_dir=None, dpi=75):
         """Constructor for LVISVis.
         Args:
-            lvis_gt (LVIS class instance, or str containing path of annotation file)
-            lvis_dt (LVISResult class instance, or str containing path of result file,
-            or list of dict)
-            img_dir (str): path of folder containing all images. If None, the image
-            to be displayed will be downloaded to the current working dir.
+            lvis_gt (LVIS class instance, or str containing path of
+                     annotation file)
+            lvis_dt (LVISResult class instance, or str containing
+            path of result file, or list of dict)
+            img_dir (str): path of folder containing all images. If None, the
+            image to be displayed will be downloaded to the current working dir
             dpi (int): dpi for figure size setup
         """
         self.logger = logging.getLogger(__name__)
@@ -38,13 +37,15 @@ class LVISVis:
             elif isinstance(lvis_dt, (str, list)):
                 self.lvis_dt = LVISResults(self.lvis_gt, lvis_dt)
             else:
-                raise TypeError("Unsupported type {} of lvis_dt.".format(lvis_dt))
+                raise TypeError(
+                    "Unsupported type {} of lvis_dt.".format(lvis_dt))
         else:
             self.lvis_dt = None
         self.dpi = dpi
         self.img_dir = img_dir if img_dir else '.'
         if self.img_dir == '.':
-            self.logger.warn("img_dir not specified. Images will be downloaded.")
+            self.logger.warn(
+                "img_dir not specified. Images will be downloaded.")
 
     def coco_segm_to_poly(self, _list):
         x = _list[0::2]
@@ -80,8 +81,7 @@ class LVISVis:
                 linewidth=2.5,
                 alpha=box_alpha,
                 linestyle=linestyle,
-            )
-        )
+            ))
 
     def vis_text(self, ax, bbox, text, color="w"):
         ax.text(
@@ -97,9 +97,12 @@ class LVISVis:
 
     def vis_mask(self, ax, segm, color):
         # segm is numpy array of shape Nx2
-        polygon = Polygon(
-            segm, fill=True, facecolor=color, edgecolor=color, linewidth=3, alpha=0.5
-        )
+        polygon = Polygon(segm,
+                          fill=True,
+                          facecolor=color,
+                          edgecolor=color,
+                          linewidth=3,
+                          alpha=0.5)
         ax.add_patch(polygon)
 
     def get_color(self, idx):
@@ -115,10 +118,12 @@ class LVISVis:
         b, g, r = cv2.split(img)
         return cv2.merge([r, g, b])
 
-    def vis_img(
-        self, img_id, show_boxes=False, show_segms=True, show_classes=False,
-        cat_ids_to_show=None
-    ):
+    def vis_img(self,
+                img_id,
+                show_boxes=False,
+                show_segms=True,
+                show_classes=False,
+                cat_ids_to_show=None):
         ann_ids = self.lvis_gt.get_ann_ids(img_ids=[img_id])
         anns = self.lvis_gt.load_anns(ids=ann_ids)
         boxes, segms, classes = [], [], []
@@ -138,7 +143,8 @@ class LVISVis:
         fig, ax = self.setup_figure(self.load_img(img_id))
 
         for idx in sorted_inds:
-            if cat_ids_to_show is not None and classes[idx] not in cat_ids_to_show:
+            if cat_ids_to_show is not None and classes[
+                    idx] not in cat_ids_to_show:
                 continue
             color = self.get_color(idx)
             if show_boxes:
@@ -150,10 +156,14 @@ class LVISVis:
                 for segm in segms[idx]:
                     self.vis_mask(ax, self.coco_segm_to_poly(segm), color)
 
-    def vis_result(
-        self, img_id, show_boxes=False, show_segms=True, show_classes=False,
-        cat_ids_to_show=None, score_thrs=0.0, show_scores=True
-    ):
+    def vis_result(self,
+                   img_id,
+                   show_boxes=False,
+                   show_segms=True,
+                   show_classes=False,
+                   cat_ids_to_show=None,
+                   score_thrs=0.0,
+                   show_scores=True):
         assert self.lvis_dt is not None, "lvis_dt was not specified."
         anns = self.lvis_dt.get_top_results(img_id, score_thrs)
         boxes, segms, classes, scores = [], [], [], []
@@ -174,7 +184,8 @@ class LVISVis:
         fig, ax = self.setup_figure(self.load_img(img_id))
 
         for idx in sorted_inds:
-            if cat_ids_to_show is not None and classes[idx] not in cat_ids_to_show:
+            if cat_ids_to_show is not None and classes[
+                    idx] not in cat_ids_to_show:
                 continue
             color = self.get_color(idx)
             if show_boxes:

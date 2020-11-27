@@ -1,10 +1,8 @@
 import datetime
 import logging
-from collections import OrderedDict
-from collections import defaultdict
+from collections import OrderedDict, defaultdict
 
 import numpy as np
-
 from lvis.lvis import LVIS
 from lvis.results import LVISResults
 
@@ -15,8 +13,10 @@ class LVISEval:
     def __init__(self, lvis_gt, lvis_dt, iou_type="segm"):
         """Constructor for LVISEval.
         Args:
-            lvis_gt (LVIS class instance, or str containing path of annotation file)
-            lvis_dt (LVISResult class instance, or str containing path of result file,
+            lvis_gt (LVIS class instance,
+                or str containing path of annotation file)
+            lvis_dt (LVISResult class instance,
+                or str containing path of result file,
             or list of dict)
             iou_type (str): segm or bbox evaluation
         """
@@ -62,11 +62,11 @@ class LVISEval:
         cat_ids = self.params.cat_ids if self.params.cat_ids else None
 
         gts = self.lvis_gt.load_anns(
-            self.lvis_gt.get_ann_ids(img_ids=self.params.img_ids, cat_ids=cat_ids)
-        )
+            self.lvis_gt.get_ann_ids(img_ids=self.params.img_ids,
+                                     cat_ids=cat_ids))
         dts = self.lvis_dt.load_anns(
-            self.lvis_dt.get_ann_ids(img_ids=self.params.img_ids, cat_ids=cat_ids)
-        )
+            self.lvis_dt.get_ann_ids(img_ids=self.params.img_ids,
+                                     cat_ids=cat_ids))
         # convert ground truth to mask if iou_type == 'segm'
         if self.params.iou_type == "segm":
             self._to_mask(gts, self.lvis_gt)
@@ -82,9 +82,9 @@ class LVISEval:
 
         # For federated dataset evaluation we will filter out all dt for an
         # image which belong to categories not present in gt and not present in
-        # the negative list for an image. In other words detector is not penalized
-        # for categories about which we don't have gt information about their
-        # presence or absence in an image.
+        # the negative list for an image. In other words detector is not
+        # penalized for categories about which we don't have gt information
+        # about their presence or absence in an image.
         img_data = self.lvis_gt.load_imgs(ids=self.params.img_ids)
         # per image map of categories not present in image
         img_nl = {d["id"]: d["neg_category_ids"] for d in img_data}
@@ -94,7 +94,10 @@ class LVISEval:
             img_pl[ann["image_id"]].add(ann["category_id"])
         # per image map of categoires which have missing gt. For these
         # categories we don't penalize the detector for flase positives.
-        self.img_nel = {d["id"]: d["not_exhaustive_category_ids"] for d in img_data}
+        self.img_nel = {
+            d["id"]: d["not_exhaustive_category_ids"]
+            for d in img_data
+        }
 
         for dt in dts:
             img_id, cat_id = dt["image_id"], dt["category_id"]
@@ -118,7 +121,8 @@ class LVISEval:
         (a list of dict) in self.eval_imgs.
         """
         self.logger.info("Running per image evaluation.")
-        self.logger.info("Evaluate annotation type *{}*".format(self.params.iou_type))
+        self.logger.info("Evaluate annotation type *{}*".format(
+            self.params.iou_type))
 
         self.params.img_ids = list(np.unique(self.params.img_ids))
 
@@ -129,16 +133,12 @@ class LVISEval:
 
         self._prepare()
 
-        self.ious = {
-            (img_id, cat_id): self.compute_iou(img_id, cat_id)
-            for img_id in self.params.img_ids
-            for cat_id in cat_ids
-        }
+        self.ious = {(img_id, cat_id): self.compute_iou(img_id, cat_id)
+                     for img_id in self.params.img_ids for cat_id in cat_ids}
 
         # loop through images, area range, max detection number
         self.eval_imgs = [
-            self.evaluate_img(img_id, cat_id, area_rng)
-            for cat_id in cat_ids
+            self.evaluate_img(img_id, cat_id, area_rng) for cat_id in cat_ids
             for area_rng in self.params.area_rng
             for img_id in self.params.img_ids
         ]
@@ -153,13 +153,11 @@ class LVISEval:
             dt = self._dts[img_id, cat_id]
         else:
             gt = [
-                _ann
-                for _cat_id in self.params.cat_ids
+                _ann for _cat_id in self.params.cat_ids
                 for _ann in self._gts[img_id, cat_id]
             ]
             dt = [
-                _ann
-                for _cat_id in self.params.cat_ids
+                _ann for _cat_id in self.params.cat_ids
                 for _ann in self._dts[img_id, cat_id]
             ]
         return gt, dt
@@ -199,7 +197,8 @@ class LVISEval:
 
         # Add another filed _ignore to only consider anns based on area range.
         for g in gt:
-            if g["ignore"] or (g["area"] < area_rng[0] or g["area"] > area_rng[1]):
+            if g["ignore"] or (g["area"] < area_rng[0]
+                               or g["area"] > area_rng[1]):
                 g["_ignore"] = 1
             else:
                 g["_ignore"] = 0
@@ -213,11 +212,9 @@ class LVISEval:
         dt = [dt[i] for i in dt_idx]
 
         # load computed ious
-        ious = (
-            self.ious[img_id, cat_id][:, gt_idx]
-            if len(self.ious[img_id, cat_id]) > 0
-            else self.ious[img_id, cat_id]
-        )
+        ious = (self.ious[img_id, cat_id][:, gt_idx]
+                if len(self.ious[img_id, cat_id]) > 0 else self.ious[img_id,
+                                                                     cat_id])
 
         num_thrs = len(self.params.iou_thrs)
         num_gt = len(gt)
@@ -269,10 +266,8 @@ class LVISEval:
         # For LVIS we will ignore any unmatched detection if that category was
         # not exhaustively annotated in gt.
         dt_ig_mask = [
-            d["area"] < area_rng[0]
-            or d["area"] > area_rng[1]
-            or d["category_id"] in self.img_nel[d["image_id"]]
-            for d in dt
+            d["area"] < area_rng[0] or d["area"] > area_rng[1]
+            or d["category_id"] in self.img_nel[d["image_id"]] for d in dt
         ]
         dt_ig_mask = np.array(dt_ig_mask).reshape((1, num_dt))  # 1 X num_dt
         dt_ig_mask = np.repeat(dt_ig_mask, num_thrs, 0)  # num_thrs X num_dt
@@ -314,9 +309,7 @@ class LVISEval:
         num_imgs = len(self.params.img_ids)
 
         # -1 for absent categories
-        precision = -np.ones(
-            (num_thrs, num_recalls, num_cats, num_area_rngs)
-        )
+        precision = -np.ones((num_thrs, num_recalls, num_cats, num_area_rngs))
         recall = -np.ones((num_thrs, num_cats, num_area_rngs))
 
         olrp_loc = -np.ones((num_cats, num_area_rngs))
@@ -342,7 +335,7 @@ class LVISEval:
                     for img_idx in range(num_imgs)
                 ]
                 # Remove elements which are None
-                E = [e for e in E if not e is None]
+                E = [e for e in E if e is not None]
                 if len(E) == 0:
                     continue
 
@@ -354,9 +347,12 @@ class LVISEval:
                 dt_scores = dt_scores[dt_idx]
                 dt_ids = dt_ids[dt_idx]
 
-                dt_m = np.concatenate([e["dt_matches"] for e in E], axis=1)[:, dt_idx]
-                dt_ig = np.concatenate([e["dt_ignore"] for e in E], axis=1)[:, dt_idx]
-                dt_iou = np.concatenate([e["dt_ious"] for e in E], axis=1)[:, dt_idx]
+                dt_m = np.concatenate([e["dt_matches"] for e in E],
+                                      axis=1)[:, dt_idx]
+                dt_ig = np.concatenate([e["dt_ignore"] for e in E],
+                                       axis=1)[:, dt_idx]
+                dt_iou = np.concatenate([e["dt_ious"] for e in E],
+                                        axis=1)[:, dt_idx]
 
                 gt_ig = np.concatenate([e["gt_ignore"] for e in E])
                 # num gt anns to consider
@@ -366,7 +362,8 @@ class LVISEval:
                     continue
 
                 tps = np.logical_and(dt_m, np.logical_not(dt_ig))
-                fps = np.logical_and(np.logical_not(dt_m), np.logical_not(dt_ig))
+                fps = np.logical_and(np.logical_not(dt_m),
+                                     np.logical_not(dt_ig))
 
                 dt_iou = np.multiply(dt_iou, tps)
                 tp_sum = np.cumsum(tps, axis=1).astype(dtype=np.float)
@@ -384,9 +381,7 @@ class LVISEval:
                     num_tp = len(tp)
                     rc = tp / num_gt
                     if num_tp:
-                        recall[iou_thr_idx, cat_idx, area_idx] = rc[
-                            -1
-                        ]
+                        recall[iou_thr_idx, cat_idx, area_idx] = rc[-1]
                     else:
                         recall[iou_thr_idx, cat_idx, area_idx] = 0
 
@@ -402,18 +397,19 @@ class LVISEval:
                         if pr[i] > pr[i - 1]:
                             pr[i - 1] = pr[i]
 
-                    rec_thrs_insert_idx = np.searchsorted(
-                        rc, self.params.rec_thrs, side="left"
-                    )
+                    rec_thrs_insert_idx = np.searchsorted(rc,
+                                                          self.params.rec_thrs,
+                                                          side="left")
 
                     pr_at_recall = [0.0] * num_recalls
 
                     try:
                         for _idx, pr_idx in enumerate(rec_thrs_insert_idx):
                             pr_at_recall[_idx] = pr[pr_idx]
-                    except:
+                    except BaseException:
                         pass
-                    precision[iou_thr_idx, :, cat_idx, area_idx] = np.array(pr_at_recall)
+                    precision[iou_thr_idx, :, cat_idx,
+                              area_idx] = np.array(pr_at_recall)
 
                 # oLRP and Opt.Thr. Computation
                 tp_num = np.cumsum(tps[0, :])
@@ -424,15 +420,16 @@ class LVISEval:
                     # There is some TPs
                     if tp_num[-1] > 0:
                         total_loc = tp_num - np.cumsum(dt_iou[0, :])
-                        lrps = (total_loc / (1 - self.params.iou_thrs[0]) + fp_num +
-                                fn_num) / (tp_num + fp_num + fn_num)
+                        lrps = (total_loc / (1 - self.params.iou_thrs[0]) +
+                                fp_num + fn_num) / (tp_num + fp_num + fn_num)
                         opt_pos_idx = np.argmin(lrps)
                         olrp[cat_idx, area_idx] = lrps[opt_pos_idx]
-                        olrp_loc[cat_idx, area_idx] = total_loc[opt_pos_idx] / \
+                        olrp_loc[cat_idx, area_idx] = total_loc[opt_pos_idx] /\
                             tp_num[opt_pos_idx]
                         olrp_fp[cat_idx, area_idx] = fp_num[opt_pos_idx] / \
                             (tp_num[opt_pos_idx] + fp_num[opt_pos_idx])
-                        olrp_fn[cat_idx, area_idx] = fn_num[opt_pos_idx] / num_gt
+                        olrp_fn[cat_idx,
+                                area_idx] = fn_num[opt_pos_idx] / num_gt
                         lrp_opt_thr[cat_idx, area_idx] = dt_scores[opt_pos_idx]
                     # There is No TP
                     else:
@@ -462,12 +459,13 @@ class LVISEval:
             'lrp_opt_thr': lrp_opt_thr,
         }
 
-    def _summarize(
-        self, summary_type, iou_thr=None, area_rng="all", freq_group_idx=None
-    ):
+    def _summarize(self,
+                   summary_type,
+                   iou_thr=None,
+                   area_rng="all",
+                   freq_group_idx=None):
         aidx = [
-            idx
-            for idx, _area_rng in enumerate(self.params.area_rng_lbl)
+            idx for idx, _area_rng in enumerate(self.params.area_rng_lbl)
             if _area_rng == area_rng
         ]
 
@@ -490,20 +488,12 @@ class LVISEval:
             # # dimension of LRP: [KxAxM]
             if summary_type == 'oLRP':
                 s = self.eval['olrp'][:, aidx]
-                titleStr = 'Optimal LRP'
-                typeStr = '    '
             elif summary_type == 'oLRP_loc':
                 s = self.eval['olrp_loc'][:, aidx]
-                titleStr = 'Optimal LRP Loc'
-                typeStr = '    '
             elif summary_type == 'oLRP_fp':
                 s = self.eval['olrp_fp'][:, aidx]
-                titleStr = 'Optimal LRP FP'
-                typeStr = '    '
             elif summary_type == 'oLRP_fn':
                 s = self.eval['olrp_fn'][:, aidx]
-                titleStr = 'Optimal LRP FN'
-                typeStr = '    '
             elif summary_type == 'LRP_thr':
                 s = self.eval['lrp_opt_thr'][:, aidx].squeeze(axis=1)
                 # Floor by using 3 decimal digits
@@ -526,15 +516,15 @@ class LVISEval:
 
         max_dets = self.params.max_dets
 
-        self.results["AP"]   = self._summarize('ap')
+        self.results["AP"] = self._summarize('ap')
         self.results["AP50"] = self._summarize('ap', iou_thr=0.50)
         self.results["AP75"] = self._summarize('ap', iou_thr=0.75)
-        self.results["APs"]  = self._summarize('ap', area_rng="small")
-        self.results["APm"]  = self._summarize('ap', area_rng="medium")
-        self.results["APl"]  = self._summarize('ap', area_rng="large")
-        self.results["APr"]  = self._summarize('ap', freq_group_idx=0)
-        self.results["APc"]  = self._summarize('ap', freq_group_idx=1)
-        self.results["APf"]  = self._summarize('ap', freq_group_idx=2)
+        self.results["APs"] = self._summarize('ap', area_rng="small")
+        self.results["APm"] = self._summarize('ap', area_rng="medium")
+        self.results["APl"] = self._summarize('ap', area_rng="large")
+        self.results["APr"] = self._summarize('ap', freq_group_idx=0)
+        self.results["APc"] = self._summarize('ap', freq_group_idx=1)
+        self.results["APf"] = self._summarize('ap', freq_group_idx=2)
 
         key = "AR@{}".format(max_dets)
         self.results[key] = self._summarize('ar')
@@ -543,14 +533,14 @@ class LVISEval:
             key = "AR{}@{}".format(area_rng[0], max_dets)
             self.results[key] = self._summarize('ar', area_rng=area_rng)
 
-        self.results["oLRP"]  = self._summarize('oLRP')
-        self.results["oLRP LOC"]  = self._summarize('oLRP_loc')
-        self.results["oLRP FP"]  = self._summarize('oLRP_fp')
-        self.results["oLRP FN"]  = self._summarize('oLRP_fn')
-        self.results["oLRPr"]  = self._summarize('oLRP', freq_group_idx=0)
-        self.results["oLRPc"]  = self._summarize('oLRP', freq_group_idx=1)
-        self.results["oLRPf"]  = self._summarize('oLRP', freq_group_idx=2)
-        self.results["LRP Opt Thr"]  = self._summarize('LRP_thr')
+        self.results["oLRP"] = self._summarize('oLRP')
+        self.results["oLRP LOC"] = self._summarize('oLRP_loc')
+        self.results["oLRP FP"] = self._summarize('oLRP_fp')
+        self.results["oLRP FN"] = self._summarize('oLRP_fn')
+        self.results["oLRPr"] = self._summarize('oLRP', freq_group_idx=0)
+        self.results["oLRPc"] = self._summarize('oLRP', freq_group_idx=1)
+        self.results["oLRPf"] = self._summarize('oLRP', freq_group_idx=2)
+        self.results["LRP Opt Thr"] = self._summarize('LRP_thr')
 
     def run(self):
         """Wrapper function which calculates the results."""
@@ -559,7 +549,8 @@ class LVISEval:
         self.summarize()
 
     def print_results(self):
-        template = " {:<18} {} @[ IoU={:<9} | area={:>6s} | maxDets={:>3d} catIds={:>3s}] = {:0.3f}"
+        template = " {:<18} {} @[ IoU={:<9} | area={:>6s} | " + \
+            "maxDets={:>3d} catIds={:>3s}] = {:0.3f}"
 
         for key, value in self.results.items():
             max_dets = self.params.max_dets
@@ -586,10 +577,9 @@ class LVISEval:
             if len(key) > 2 and key[2].isdigit():
                 iou_thr = (float(key[-2:]) / 100)
                 iou = "{:0.2f}".format(iou_thr)
-            elif  "oLRP" not in key:
-                iou = "{:0.2f}:{:0.2f}".format(
-                    self.params.iou_thrs[0], self.params.iou_thrs[-1]
-                )
+            elif "oLRP" not in key:
+                iou = "{:0.2f}:{:0.2f}".format(self.params.iou_thrs[0],
+                                               self.params.iou_thrs[-1])
 
             if len(key) > 2 and key[-1] in ["r", "c", "f"]:
                 cat_group_name = key[-1]
@@ -601,7 +591,9 @@ class LVISEval:
             else:
                 area_rng = "all"
 
-            print(template.format(title, _type, iou, area_rng, max_dets, cat_group_name, value))
+            print(
+                template.format(title, _type, iou, area_rng, max_dets,
+                                cat_group_name, value))
 
     def print_lrp_opt_thresholds(self):
         np.set_printoptions(threshold=np.inf)
@@ -624,18 +616,20 @@ class Params:
         self.cat_ids = []
         # np.arange causes trouble.  the data point on arange is slightly
         # larger than the true value
-        self.iou_thrs = np.linspace(
-            0.5, 0.95, int(np.round((0.95 - 0.5) / 0.05)) + 1, endpoint=True
-        )
-        self.rec_thrs = np.linspace(
-            0.0, 1.00, int(np.round((1.00 - 0.0) / 0.01)) + 1, endpoint=True
-        )
+        self.iou_thrs = np.linspace(0.5,
+                                    0.95,
+                                    int(np.round((0.95 - 0.5) / 0.05)) + 1,
+                                    endpoint=True)
+        self.rec_thrs = np.linspace(0.0,
+                                    1.00,
+                                    int(np.round((1.00 - 0.0) / 0.01)) + 1,
+                                    endpoint=True)
         self.max_dets = 300
         self.area_rng = [
-            [0 ** 2, 1e5 ** 2],
-            [0 ** 2, 32 ** 2],
-            [32 ** 2, 96 ** 2],
-            [96 ** 2, 1e5 ** 2],
+            [0**2, 1e5**2],
+            [0**2, 32**2],
+            [32**2, 96**2],
+            [96**2, 1e5**2],
         ]
         self.area_rng_lbl = ["all", "small", "medium", "large"]
         self.use_cats = 1
