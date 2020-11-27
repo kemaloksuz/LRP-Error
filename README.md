@@ -181,7 +181,7 @@ Some example LRP results of the models for panoptic segmentation task:
 Please see [panoptic_segmentation.md](result_tables/panoptic_segmentation.md) for more and detailed results.
 
 ## License
-This project is released under the [Apache 2.0 license](LICENSE).
+This project is released under the [Apache 2.0 license](LICENSE). Please see also the licences of each api provided under each directory.
 
 ## References
 [1] [cocoapi](https://github.com/cocodataset/cocoapi) of [COCO dataset](http://cocodataset.org/).  
