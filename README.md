@@ -111,8 +111,8 @@ pip install "git+https://github.com/kemaloksuz/LRP-Error.git#subdirectory=lvis-a
 To facilitate the usage of LRP on each supported evaluation api, we provide a demo file:
 
 - Official COCO api: Please follow the instructions [in this file](pycocotools/demo.py) to reproduce an example evaluation with LRP.
-- Official COCO panopticapi: (Coming Soon)
-- Official LVIS api: Please see [in this file](lvis-api/demo.py) as an example evaluation of LVIS result with LRP.
+- Official COCO panopticapi: Please follow [this file](panopticapi/demo.py) to reproduce an example evaluation with LRP.
+- Official LVIS api: Please see [this file](lvis-api/demo.py) as an example evaluation of LVIS result with LRP.
 
 ## Evaluated Visual Detection Tasks and Models
 
