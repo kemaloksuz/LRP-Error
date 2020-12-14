@@ -1,6 +1,6 @@
 ### Evaluated Panoptic Segmentation Models (Coming Soon)
 
-|   Method   | Backbone | Epoch | Type |Link to Config |  Model | Detections | LRP Results | LRP | LRP<sub>Loc</sub> | LRP<sub>FP</sub> | LRP<sub>FN</sub> | PQ | SQ | RQ |
+|   Method   | Backbone | Epoch | Type |Link to Config |  Model | Detections | LRP Results | LRP ↓ | LRP<sub>Loc</sub> ↓ | LRP<sub>FP</sub> ↓ | LRP<sub>FN</sub> ↓ | PQ ↑ | SQ ↑ | RQ ↑ |
 | :---------------------------: | :-------: | :-----: |  :-----: | :------------: | :------: | :-----:| :----------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
 | Panoptic FPN | R50 | 12 | All |[mmdetection](https://github.com/open-mmlab/mmdetection/blob/master/configs/ssd/ssd300_coco.py) | [model](https://drive.google.com/file/d/1pASqIfWRAJICBGW2MPwVW3C8pquA-pqV/view?usp=sharing) | [json](https://drive.google.com/file/d/1vt0Gn5El4st31_CUJqq_Gaf1VlLdqpan/view?usp=sharing) |[txt](https://drive.google.com/file/d/1kfXbmKPyoLvtBpFJKPGeIWMGphdYMoWC/view?usp=sharing)| 77.5 | 22.2 | 40.2 | 57.2 | 39.4 | 77.8 | 48.3 |
 | Panoptic FPN | R50 | 12 | Things |[mmdetection](https://github.com/open-mmlab/mmdetection/blob/master/configs/ssd/ssd300_coco.py) | [model](https://drive.google.com/file/d/1pASqIfWRAJICBGW2MPwVW3C8pquA-pqV/view?usp=sharing) | [json](https://drive.google.com/file/d/1vt0Gn5El4st31_CUJqq_Gaf1VlLdqpan/view?usp=sharing) |[txt](https://drive.google.com/file/d/1kfXbmKPyoLvtBpFJKPGeIWMGphdYMoWC/view?usp=sharing)| 72.7 | 18.1 | 29.4 | 51.7 | 45.9 | 80.9 | 55.3 |
