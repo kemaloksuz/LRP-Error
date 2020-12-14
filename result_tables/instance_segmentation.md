@@ -1,6 +1,6 @@
 ### Evaluated Instance Segmentation Models (Coming Soon)
 
-|   Method   | Backbone | Epoch | Link to Config |  Model | Detections | LRP Results | oLRP | oLRP<sub>Loc</sub> | oLRP<sub>FP</sub> | oLRP<sub>FN</sub> | AP<sup>C</sup> | AP<sub>50</sub> | AP<sub>75</sub> | AR<sup>C</sup><sub>100</sub>|
+|   Method   | Backbone | Epoch | Link to Config |  Model | Detections | LRP Results | oLRP ↓ | oLRP<sub>Loc</sub> ↓ | oLRP<sub>FP</sub> ↓ | oLRP<sub>FN</sub> ↓ | AP<sup>C</sup> ↑ | AP<sub>50</sub> ↑ | AP<sub>75</sub> ↑ | AR<sup>C</sup><sub>100</sub> ↑|
 | :---------------------------: | :-------: | :-----: | :------------: | :------: | :-----:| :----------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
 | Mask R-CNN | R50 | 24 | | | | | 70.7 | 18.5 | 28.5 | 47.0 | 35.4 | 56.4 | 37.9 | 48.1 |
 | Mask R-CNN | R101 | 24 | | | | | 69.4 | 18.2 | 25.9 | 46.3 | 36.6 | 57.9 | 39.1 | 48.8 |
