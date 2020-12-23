@@ -4,7 +4,7 @@ The official implementation of LRP Error. This repository provides the implement
 
 - Official COCO api [1] to evaluate object detection, keypoint detection and instance segmentation 
 - Official COCO panoptic api [2] to evaluate panoptic segmentation 
-- Official LVIS api [3] to evaluate panoptic segmentation 
+- Official LVIS api [3] to evaluate instance segmentation 
 
 > [**One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks**](https://arxiv.org/abs/2011.10772),
 > [Kemal Oksuz](https://kemaloksuz.github.io/), Baris Can Cam, , [Sinan Kalkan](http://www.kovan.ceng.metu.edu.tr/~sinan/), [Emre Akbas](http://user.ceng.metu.edu.tr/~emre/),
@@ -110,9 +110,9 @@ pip install "git+https://github.com/kemaloksuz/LRP-Error.git#subdirectory=lvis-a
 ## Using Demo Files
 To facilitate the usage of LRP on each supported evaluation api, we provide a demo file:
 
-- Official COCO api: Please follow the instructions [in this file](pycocotools/demo.py) to reproduce an example evaluation with LRP.
-- Official COCO panopticapi: (Coming Soon)
-- Official LVIS api: Please see [in this file](lvis-api/demo.py) as an example evaluation of LVIS result with LRP.
+- Official COCO api: Please follow the instructions [in this file](pycocotools/demo.py) to reproduce an example evaluation with LRP. [This](https://drive.google.com/file/d/1kfXbmKPyoLvtBpFJKPGeIWMGphdYMoWC/view?usp=sharing) is an example output of obtained by this api.
+- Official COCO panopticapi: Please follow [this file](panopticapi/demo.py) to reproduce an example evaluation with LRP. [This](https://drive.google.com/file/d/1zjgych0uL_1zNjk0kqBskUqhTGA7zfVh/view?usp=sharing) is an example output of obtained by this api.
+- Official LVIS api: Please see [this file](lvis-api/demo.py) as an example evaluation of LVIS result with LRP. [This](https://drive.google.com/file/d/16Ts6vyb-Il6oX5NVGxrIkM7vY75ktf0a/view?usp=sharing) is an example output of obtained by this api.
 
 ## Evaluated Visual Detection Tasks and Models
 
@@ -140,10 +140,6 @@ Some example LRP results of the models for object detection task:
 | aLRP Loss | X101 | 100 | 62.5 | 15.1 | 23.2 | 39.5 | 45.4 | 66.6 | 48.0 |
 
 Please see [object_detection.md](result_tables/object_detection.md) for more and detailed results.
-
-|   Method   | Backbone | Epoch | oLRP | oLRP<sub>Loc</sub> | oLRP<sub>FP</sub> | oLRP<sub>FN</sub> | AP<sup>C</sup> | AP<sub>50</sub> | AP<sub>75</sub> | AR<sup>C</sup><sub>100</sub>|
-| :---------------------------: | :-------: | :-----: | :------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
-| ATSS | R50 | 12 | 68.6 | 15.4 | 30.3 | 46.6 | 39.4 | 57.6 | 42.8 | 58.3 |
 
 ### Evaluated Keypoint Detection Models 
 
@@ -181,7 +177,7 @@ Some example LRP results of the models for panoptic segmentation task:
 Please see [panoptic_segmentation.md](result_tables/panoptic_segmentation.md) for more and detailed results.
 
 ## License
-This project is released under the [Apache 2.0 license](LICENSE).
+This project is released under the [Apache 2.0 license](LICENSE). Please see also the licences of each api provided under each directory.
 
 ## References
 [1] [cocoapi](https://github.com/cocodataset/cocoapi) of [COCO dataset](http://cocodataset.org/).  

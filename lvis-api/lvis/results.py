@@ -1,6 +1,7 @@
-from copy import deepcopy
 import logging
 from collections import defaultdict
+from copy import deepcopy
+
 from lvis.lvis import LVIS
 
 import pycocotools.mask as mask_utils
@@ -31,7 +32,8 @@ class LVISResults(LVIS):
         else:
             # this path way is provided to avoid saving and loading result
             # during training.
-            self.logger.warn("Assuming user provided the results in correct format.")
+            self.logger.warn(
+                "Assuming user provided the results in correct format.")
             result_anns = results
 
         assert isinstance(result_anns, list), "results is not a list."

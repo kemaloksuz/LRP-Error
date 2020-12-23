@@ -35,3 +35,5 @@ jobs:
       run: cd pycocotools && rm -rf *.eggs-info && pip install .
     - name: Build and install panopticapi
       run: cd panopticapi && rm -rf *.eggs-info && pip install .
+    - name: Build and install lvis-api
+      run: cd lvis-api && rm -rf *.eggs-info && pip install .

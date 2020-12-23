@@ -1,5 +1,4 @@
-import logging
-from lvis import LVIS, LVISResults, LVISEval
+from lvis import LVISEval
 
 # result and val files for 100 randomly sampled images.
 ANNOTATION_PATH = "./data/lvis_val_100.json"
