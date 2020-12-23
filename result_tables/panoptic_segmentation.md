@@ -1,6 +1,6 @@
 ### Evaluated Panoptic Segmentation Models
 
-|   Method   | Backbone | Epoch | Type |Link to Config |  Model | Detections | LRP Results | LRP | LRP<sub>Loc</sub> | LRP<sub>FP</sub> | LRP<sub>FN</sub> | PQ | SQ | RQ |
+|   Method   | Backbone | Epoch | Type |Link to Config |  Model | Detections | LRP Results | LRP ↓ | LRP<sub>Loc</sub> ↓ | LRP<sub>FP</sub> ↓ | LRP<sub>FN</sub> ↓ | PQ ↑ | SQ ↑ | RQ ↑ |
 | :---------------------------: | :-------: | :-----: |  :-----: | :------------: | :------: | :-----:| :----------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
 | Panoptic FPN | R50 | 12 | All |[detectron2](https://github.com/facebookresearch/detectron2/blob/master/configs/COCO-PanopticSegmentation/panoptic_fpn_R_50_1x.yaml) | [model](https://drive.google.com/file/d/1kSHgYmXhXRkf2KM6OkPjQP4xZTULkNit/view?usp=sharing) | [zip](https://drive.google.com/file/d/1grnD_3Xj4-EAadN6-6uSG0aPNwt8wjZG/view?usp=sharing) |[txt](https://drive.google.com/file/d/16Ts6vyb-Il6oX5NVGxrIkM7vY75ktf0a/view?usp=sharing)| 77.5 | 22.2 | 40.2 | 57.2 | 39.4 | 77.8 | 48.3 |
 | Panoptic FPN | R50 | 12 | Things |  |  |  |  | 72.7 | 18.1 | 29.4 | 51.7 | 45.9 | 80.9 | 55.3 |
