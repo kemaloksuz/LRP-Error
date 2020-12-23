@@ -1,4 +1,4 @@
-### Evaluated Panoptic Segmentation Models (Coming Soon)
+### Evaluated Panoptic Segmentation Models
 
 |   Method   | Backbone | Epoch | Type |Link to Config |  Model | Detections | LRP Results | LRP ↓ | LRP<sub>Loc</sub> ↓ | LRP<sub>FP</sub> ↓ | LRP<sub>FN</sub> ↓ | PQ ↑ | SQ ↑ | RQ ↑ |
 | :---------------------------: | :-------: | :-----: |  :-----: | :------------: | :------: | :-----:| :----------: | :------: | :------: | :------: | :------: | :------: | :------: | :------: |
