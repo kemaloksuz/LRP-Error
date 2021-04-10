@@ -38,8 +38,13 @@ cocoDt = cocoGt.loadRes(resFile)
 
 imgIds = sorted(cocoGt.getImgIds())
 
+# If you want to have LRP components for different sizes (e.g. small, 
+# medium and large for object detection), then set this variable 
+# to True.
+print_lrp_components_over_size = True
+
 # running evaluation
-cocoEval = COCOeval(cocoGt, cocoDt, annType)
+cocoEval = COCOeval(cocoGt, cocoDt, annType, print_lrp_components_over_size)
 cocoEval.params.imgIds = imgIds
 cocoEval.evaluate()
 cocoEval.accumulate()

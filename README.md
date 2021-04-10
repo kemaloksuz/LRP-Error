@@ -88,6 +88,7 @@ Please see our paper for a more comprehensive analysis of PQ, and its theoretica
 
 ## Specification of Dependencies
 
+- numpy
 - setuptools>=18.0
 - cython>=0.27.3 
 - matplotlib>=2.1.0

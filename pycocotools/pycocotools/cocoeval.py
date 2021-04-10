@@ -60,7 +60,7 @@ class COCOeval:
     # Data, paper, and tutorials available at:  http://mscoco.org/
     # Code written by Piotr Dollar and Tsung-Yi Lin, 2015.
     # Licensed under the Simplified BSD License [see coco/license.txt]
-    def __init__(self, cocoGt=None, cocoDt=None, iouType='segm'):
+    def __init__(self, cocoGt=None, cocoDt=None, iouType='segm', lrp_size_details = False):
         '''
         Initialize CocoEval using coco APIs for gt and dt
         :param cocoGt: coco object with ground truth annotations
@@ -76,7 +76,7 @@ class COCOeval:
         self.eval = {}  # accumulated evaluation results
         self._gts = defaultdict(list)  # gt for evaluation
         self._dts = defaultdict(list)  # dt for evaluation
-        self.params = Params(iouType=iouType)  # parameters
+        self.params = Params(iouType=iouType, lrp_size_details=lrp_size_details)  # parameters
         self._paramsEval = {}  # parameters for evaluation
         self.stats = []  # result summarization
         self.ious = {}  # ious between all gts and dts
@@ -583,7 +583,7 @@ class COCOeval:
             return mean_s
 
         def _summarizeDets():
-            stats = np.zeros((16, ))
+            stats = np.zeros((19, ))
             stats[0] = _summarize(1)
             stats[1] = _summarize(1, iouThr=.5, maxDets=self.params.maxDets[2])
             stats[2] = _summarize(1,
@@ -630,6 +630,68 @@ class COCOeval:
                                    areaRng='all',
                                    maxDets=self.params.maxDets[2],
                                    lrp_type='oLRP_false_negative')
+            stats[16] = _summarize(-1,
+                                   iouThr=.5,
+                                   areaRng='small',
+                                   maxDets=self.params.maxDets[2],
+                                   lrp_type='oLRP')
+            stats[17] = _summarize(-1,
+                                   iouThr=.5,
+                                   areaRng='medium',
+                                   maxDets=self.params.maxDets[2],
+                                   lrp_type='oLRP')
+            stats[18] = _summarize(-1,
+                                   iouThr=.5,
+                                   areaRng='large',
+                                   maxDets=self.params.maxDets[2],
+                                   lrp_type='oLRP')
+            if self.params.lrp_size_details:
+                stats_lrp_size = np.zeros((9, ))
+                stats_lrp_size[0] = _summarize(-1,
+                                       iouThr=.5,
+                                       areaRng='small',
+                                       maxDets=self.params.maxDets[2],
+                                       lrp_type='oLRP_Localisation')
+                stats_lrp_size[1] = _summarize(-1,
+                                       iouThr=.5,
+                                       areaRng='medium',
+                                       maxDets=self.params.maxDets[2],
+                                       lrp_type='oLRP_Localisation')
+                stats_lrp_size[2] = _summarize(-1,
+                                       iouThr=.5,
+                                       areaRng='large',
+                                       maxDets=self.params.maxDets[2],
+                                       lrp_type='oLRP_Localisation')
+                stats_lrp_size[3] = _summarize(-1,
+                                       iouThr=.5,
+                                       areaRng='small',
+                                       maxDets=self.params.maxDets[2],
+                                       lrp_type='oLRP_false_positive')
+                stats_lrp_size[4] = _summarize(-1,
+                                       iouThr=.5,
+                                       areaRng='medium',
+                                       maxDets=self.params.maxDets[2],
+                                       lrp_type='oLRP_false_positive')
+                stats_lrp_size[5] = _summarize(-1,
+                                       iouThr=.5,
+                                       areaRng='large',
+                                       maxDets=self.params.maxDets[2],
+                                       lrp_type='oLRP_false_positive')
+                stats_lrp_size[6] = _summarize(-1,
+                                       iouThr=.5,
+                                       areaRng='small',
+                                       maxDets=self.params.maxDets[2],
+                                       lrp_type='oLRP_false_negative')
+                stats_lrp_size[7] = _summarize(-1,
+                                       iouThr=.5,
+                                       areaRng='medium',
+                                       maxDets=self.params.maxDets[2],
+                                       lrp_type='oLRP_false_negative')
+                stats_lrp_size[8] = _summarize(-1,
+                                       iouThr=.5,
+                                       areaRng='large',
+                                       maxDets=self.params.maxDets[2],
+                                       lrp_type='oLRP_false_negative')
             _summarize(-1,
                        iouThr=.5,
                        areaRng='all',
@@ -638,7 +700,7 @@ class COCOeval:
             return stats
 
         def _summarizeKps():
-            stats = np.zeros((14, ))
+            stats = np.zeros((16, ))
             stats[0] = _summarize(1, maxDets=20)
             stats[1] = _summarize(1, maxDets=20, iouThr=.5)
             stats[2] = _summarize(1, maxDets=20, iouThr=.75)
@@ -669,6 +731,48 @@ class COCOeval:
                                    iouThr=.5,
                                    areaRng='all',
                                    lrp_type='oLRP_false_negative')
+            stats[14] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
+                                   areaRng='medium',
+                                   lrp_type='oLRP')
+            stats[15] = _summarize(-1,
+                                   maxDets=20,
+                                   iouThr=.5,
+                                   areaRng='large',
+                                   lrp_type='oLRP')
+            if self.params.lrp_size_details:
+                stats_lrp_size = np.zeros((6, ))
+                stats_lrp_size[0] = _summarize(-1,
+                                       maxDets=20,
+                                       iouThr=.5,
+                                       areaRng='medium',
+                                       lrp_type='oLRP_Localisation')
+                stats_lrp_size[1] = _summarize(-1,
+                                       maxDets=20,
+                                       iouThr=.5,
+                                       areaRng='large',
+                                       lrp_type='oLRP_Localisation')
+                stats_lrp_size[2] = _summarize(-1,
+                                       maxDets=20,
+                                       iouThr=.5,
+                                       areaRng='medium',
+                                       lrp_type='oLRP_false_positive')
+                stats_lrp_size[3] = _summarize(-1,
+                                       maxDets=20,
+                                       iouThr=.5,
+                                       areaRng='large',
+                                       lrp_type='oLRP_false_positive')
+                stats_lrp_size[4] = _summarize(-1,
+                                       maxDets=20,
+                                       iouThr=.5,
+                                       areaRng='medium',
+                                       lrp_type='oLRP_false_negative')
+                stats_lrp_size[5] = _summarize(-1,
+                                       maxDets=20,
+                                       iouThr=.5,
+                                       areaRng='large',
+                                       lrp_type='oLRP_false_negative')
             _summarize(-1,
                        iouThr=.5,
                        areaRng='all',
@@ -734,7 +838,7 @@ class Params:
             .87, .87, .89, .89
         ]) / 10.0
 
-    def __init__(self, iouType='segm'):
+    def __init__(self, iouType='segm', lrp_size_details = False):
         if iouType == 'segm' or iouType == 'bbox':
             self.setDetParams()
         elif iouType == 'keypoints':
@@ -742,5 +846,6 @@ class Params:
         else:
             raise Exception('iouType not supported')
         self.iouType = iouType
+        self.lrp_size_details = lrp_size_details
         # useSegm is deprecated
         self.useSegm = None
