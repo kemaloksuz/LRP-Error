@@ -1,26 +1,38 @@
 # One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks
+The official implementation of the "LRP Error", which was proposed in the following publications.
 
-The official implementation of LRP Error. This repository provides the implementation of LRP Error on the following evaluation apis:
+> [**One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks**](https://arxiv.org/abs/2011.10772),   
+> [Kemal Oksuz](https://kemaloksuz.github.io/), Baris Can Cam, [Sinan Kalkan](http://www.kovan.ceng.metu.edu.tr/~sinan/), [Emre Akbas](http://user.ceng.metu.edu.tr/~emre/),   
+> IEEE Transaction on Pattern Analysis and Machine Intelligence, 2021. ([publisher's page](https://www.computer.org/csdl/journal/tp/5555/01/09625722/1yLTokztxC0))
 
+> [**Localization Recall Precision (LRP): A New Performance Metric for Object Detection**](https://openaccess.thecvf.com/content_ECCV_2018/html/Kemal_Oksuz_Localization_Recall_Precision_ECCV_2018_paper.html).   
+> [Kemal Oksuz](https://kemaloksuz.github.io/), Baris Can Cam, [Emre Akbas](http://user.ceng.metu.edu.tr/~emre/), [Sinan Kalkan](http://www.kovan.ceng.metu.edu.tr/~sinan/),   
+> European Conference on Computer Vision, 2020.
+
+ This repository provides the implementation of LRP Error on the following evaluation apis:
 - Official COCO api [1] to evaluate object detection, keypoint detection and instance segmentation 
 - Official COCO panoptic api [2] to evaluate panoptic segmentation 
 - Official LVIS api [3] to evaluate instance segmentation 
 
-> [**One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks**](https://arxiv.org/abs/2011.10772),
-> [Kemal Oksuz](https://kemaloksuz.github.io/), Baris Can Cam, , [Sinan Kalkan](http://www.kovan.ceng.metu.edu.tr/~sinan/), [Emre Akbas](http://user.ceng.metu.edu.tr/~emre/),
-> ([arXiv pre-print](https://arxiv.org/abs/2011.10772))
-
 For mmdetection COCO api [4] to evaluate object detection, keypoint detection and instance segmentation [see this repository](https://github.com/kemaloksuz/cocoapi).
-
 ## How to Cite
+Please cite the following papers if you find our papers or repository useful. If you must cite only 1 paper, please prefer the TPAMI one.
 
-Please cite the paper if you benefit from our paper or repository:
 ```
-@article{LRP,
-       title = {One Metric to Measure them All: Localisation Recall Precision (LRP) for Evaluating Visual Detection Tasks},
-       author = {Kemal Oksuz and Baris Can Cam and Sinan Kalkan and Emre Akbas},
-       booktitle = {arXiv},
-       year = {2020}
+@article{LRP_TPAMI, 
+  title={One metric to measure them all: Localisation recall precision (LRP) for evaluating visual detection tasks}, 
+  author={Oksuz, Kemal and Cam, Baris Can and Kalkan, Sinan and Akbas, Emre}, 
+  journal={IEEE Transactions on Pattern Analysis and Machine Intelligence}, 
+  year={2021}, 
+  publisher={IEEE}
+}
+
+@inproceedings{LRP_ECCV, 
+  title={Localization recall precision (LRP): A new performance metric for object detection}, 
+  author={Oksuz, Kemal and Cam, Baris Can and Akbas, Emre and Kalkan, Sinan}, 
+  booktitle={Proceedings of the European Conference on Computer Vision (ECCV)}, 
+  pages={504--519}, 
+  year={2018}
 }
 ```
 
