@@ -1,29 +1,42 @@
+"""To compile and install locally run "python setup.py build_ext --inplace".
+To install library to Python site-packages run "python -m pip install --use-feature=in-tree-build ."
+"""
+import platform
+from pathlib import Path
+from setuptools import setup, Extension
+
 import numpy as np
-from setuptools import Extension, setup
-
-# To compile and install locally run "python setup.py build_ext --inplace"
-# To install library to Python site-packages run "python setup.py
-# build_ext install"
-
-# Note that the original compile flags below are GCC flags unsupported by
-# the Visual C++ 2015 build tools.
-# They can safely be removed.
 
 ext_modules = [
-    Extension(
-        'pycocotools._mask',
-        sources=['common/maskApi.c', 'pycocotools/_mask.pyx'],
-        include_dirs=[np.get_include(), 'common'],
-        # extra_compile_args=['-Wno-cpp', '-Wno-unused-function', '-std=c99'],
-        extra_compile_args=[],
-    )
-]
+        Extension(
+            'pycocotools._mask',
+            sources=['./common/maskApi.c', 'pycocotools/_mask.pyx'],
+            include_dirs=[np.get_include(), './common'],
+            extra_compile_args=[] if platform.system()=='Windows' else
+            ['-Wno-cpp', '-Wno-unused-function', '-std=c99'],
+        )
+    ]
 
-setup(name='pycocotools',
-      packages=['pycocotools'],
-      package_dir={'pycocotools': 'pycocotools'},
-      install_requires=[
-          'setuptools>=18.0', 'cython>=0.27.3', 'matplotlib>=2.1.0'
-      ],
-      version='2.0',
-      ext_modules=ext_modules)
+try:
+    readme = Path(__file__).parent.parent.joinpath("README.md").read_text("utf-8")
+except FileNotFoundError:
+    readme = ""
+
+
+setup(
+    name='pycocotools',
+    description='Official API of LRP Error for the MS-COCO dataset',
+    long_description=readme,
+    long_description_content_type="text/markdown",
+    url="https://github.com/ppwwyyxx/cocoapi",
+    license="FreeBSD",
+    packages=['pycocotools'],
+    package_dir={'pycocotools': 'pycocotools'},
+    python_requires='>=3.5',
+    install_requires=[
+        'matplotlib>=2.1.0',
+        'numpy',
+    ],
+    version='12.0.',
+    ext_modules=ext_modules
+)
